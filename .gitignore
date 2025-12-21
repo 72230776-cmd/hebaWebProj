@@ -50,6 +50,8 @@ Thumbs.db
 uploads/
 temp/
 *.pem
+backend/node_modules/
+backend/.env
 
 # Build outputs
 *.zip
