@@ -44,10 +44,11 @@ cd africa_full_website
 
 2. Install frontend dependencies:
 ```bash
+cd frontend
 npm install
 ```
 
-3. Install backend dependencies (when backend is set up):
+3. Install backend dependencies:
 ```bash
 cd backend
 npm install
@@ -62,29 +63,49 @@ npm install
    - Create a MySQL database
    - Run the database schema scripts
 
-6. Start the development server:
+6. Start the development servers:
 ```bash
-# Frontend
+# Option 1: Use the startup scripts (recommended)
+# Windows:
+START_SERVERS.bat
+# Or PowerShell:
+.\START_SERVERS.ps1
+
+# Option 2: Manual start
+# Frontend (in one terminal)
+cd frontend
 npm start
 
-# Backend (in separate terminal)
+# Backend (in another terminal)
 cd backend
-npm start
+npm run dev
 ```
 
 ## Project Structure
 
 ```
 africa_full_website/
-├── public/
-├── src/
-├── backend/
-│   ├── routes/
-│   ├── models/
-│   ├── controllers/
-│   ├── middleware/
-│   └── config/
-├── package.json
+├── frontend/              # React frontend application
+│   ├── public/           # Static assets
+│   ├── src/              # React source code
+│   │   ├── components/  # React components
+│   │   ├── pages/       # Page components
+│   │   ├── contexts/    # React contexts (Auth, Cart)
+│   │   └── styles/      # CSS styles
+│   ├── package.json
+│   └── node_modules/
+├── backend/              # Node.js/Express API
+│   ├── config/          # Database & admin config
+│   ├── controllers/      # Route controllers
+│   ├── middleware/       # Auth middleware
+│   ├── models/           # Database models
+│   ├── routes/           # API routes
+│   ├── server.js         # Main server file
+│   ├── setupDatabase.js # Database setup script
+│   ├── package.json
+│   └── node_modules/
+├── START_SERVERS.bat     # Windows batch script to start both servers
+├── START_SERVERS.ps1     # PowerShell script to start both servers
 └── README.md
 ```
 
@@ -95,7 +116,11 @@ africa_full_website/
 ## Deployment
 
 ### Frontend (GitHub Pages)
-1. Build the React app: `npm run build`
+1. Build the React app: 
+```bash
+cd frontend
+npm run build
+```
 2. Deploy to GitHub Pages using GitHub Actions or gh-pages
 
 ### Backend (Render/Railway)

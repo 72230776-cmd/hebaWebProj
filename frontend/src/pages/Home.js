@@ -1,6 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import "../styles/home.css";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleShopNow = () => {
+    navigate("/products");
+  };
+
   return (
     <div className="home-container">
 
@@ -11,7 +18,7 @@ const Home = () => {
           Discover authentic African handmade crafts, clothing, jewelry,
           décor and natural skincare — all made by talented artisans across Africa.
         </p>
-        <button className="hero-btn">Shop Now</button>
+        <button className="hero-btn" onClick={handleShopNow}>Shop Now</button>
       </div>
 
       {/* ABOUT SECTION */}

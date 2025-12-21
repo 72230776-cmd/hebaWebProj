@@ -13,7 +13,7 @@ const generateToken = (userId, role) => {
 // Register a new user
 exports.register = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
 
     // Validation
     if (!username || !email || !password) {
@@ -48,15 +48,15 @@ exports.register = async (req, res) => {
       });
     }
 
-    // Only allow 'user' role for registration (admin must be created manually)
-    const userRole = role === 'admin' ? 'user' : (role || 'user');
+    // All registrations are automatically 'user' role (admin is hardcoded)
+    // Role parameter is ignored for security - admin can only be created via setup script
 
-    // Create user
+    // Create user with 'user' role only
     const newUser = await User.create({
       username,
       email,
       password,
-      role: userRole
+      role: 'user' // Always 'user' - admin is hardcoded in setup
     });
 
     // Generate token

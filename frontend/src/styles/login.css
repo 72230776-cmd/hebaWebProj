@@ -1,0 +1,123 @@
+/* MAIN CONTAINER */
+.auth-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+  background-color: #fff7eb;
+  font-family: Arial, sans-serif;
+}
+
+/* AUTH CARD */
+.auth-card {
+  background: white;
+  border-radius: 15px;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  border: 2px solid #f4a226;
+}
+
+.auth-card h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #c66a00;
+  font-size: 36px;
+  text-shadow: 1px 1px 2px #ffdaaa;
+}
+
+/* ERROR MESSAGE */
+.error-message {
+  background-color: #ffe0e0;
+  color: #c33;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+  border: 2px solid #ff9999;
+  font-size: 15px;
+}
+
+/* FORM GROUP */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #b35400;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #f4a226;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  box-sizing: border-box;
+  background-color: #fff7eb;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #ffb84d;
+  box-shadow: 0 0 5px rgba(244, 162, 38, 0.3);
+}
+
+/* AUTH BUTTON */
+.auth-btn {
+  width: 100%;
+  padding: 12px;
+  background-color: #f4a226;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 10px;
+}
+
+.auth-btn:hover:not(:disabled) {
+  background-color: #ffb84d;
+  transform: translateY(-2px);
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* TOGGLE SECTION */
+.auth-toggle {
+  text-align: center;
+  margin-top: 25px;
+  color: #444;
+  font-size: 16px;
+}
+
+.toggle-btn {
+  background: none;
+  border: none;
+  color: #c66a00;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 16px;
+  padding: 0;
+  margin-left: 5px;
+  transition: color 0.3s;
+}
+
+.toggle-btn:hover {
+  color: #ffb84d;
+}
+
