@@ -37,9 +37,11 @@ Thumbs.db
 .DS_Store
 
 # Database
-*.sql
 *.db
 *.sqlite
+# Allow schema files
+!**/dbSchema.sql
+!**/*schema.sql
 
 # Environment variables
 .env
