@@ -1,0 +1,92 @@
+/* MAIN CONTAINER */
+.home-container {
+  font-family: Arial, sans-serif;
+  line-height: 1.7;
+}
+
+/* HERO SECTION */
+.hero-section {
+  background-image: url("African_pattern.jpg");
+  background-size: cover;
+  background-position: center;
+  padding: 120px 20px;
+  text-align: center;
+  color: white;
+  text-shadow: 2px 2px 4px black;
+}
+
+.hero-section h1 {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.hero-section p {
+  font-size: 20px;
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.hero-btn {
+  background-color: #f4a226;
+  color: black;
+  font-weight: bold;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: 0.3s;
+}
+
+.hero-btn:hover {
+  background-color: #ffb84d;
+}
+
+/* ABOUT SECTION */
+.about-section {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.about-section h2 {
+  color: #c66a00;
+  margin-bottom: 10px;
+}
+
+/* WHY CHOOSE US */
+.why-section {
+  background-color: #fff3e0;
+  padding: 40px 20px;
+}
+
+.why-section h2 {
+  text-align: center;
+  color: #c66a00;
+}
+
+.why-grid {
+  max-width: 1100px;
+  margin: 30px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.why-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: 0.3s;
+}
+
+.why-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.why-card h3 {
+  margin-bottom: 10px;
+  color: #b35400;
+}
