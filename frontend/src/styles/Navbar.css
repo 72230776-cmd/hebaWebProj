@@ -103,3 +103,17 @@
   background: #ffb84d;
   color: black;
 }
+
+.admin-link {
+  background: #9C27B0;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.admin-link:hover {
+  background: #7B1FA2;
+  color: white;
+}

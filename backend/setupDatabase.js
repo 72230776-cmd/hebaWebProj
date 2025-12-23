@@ -52,26 +52,36 @@ async function setupDatabase() {
     await connection.query("USE africa_db");
     console.log('   ✓ Using africa_db database');
 
-    // Create users table
-    try {
-      await connection.query(`
-        CREATE TABLE IF NOT EXISTS users (
-          id INT AUTO_INCREMENT PRIMARY KEY,
-          username VARCHAR(50) UNIQUE NOT NULL,
-          email VARCHAR(100) UNIQUE NOT NULL,
-          password VARCHAR(255) NOT NULL,
-          role ENUM('admin', 'user') DEFAULT 'user',
-          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-      `);
-      console.log('   ✓ Users table created');
-    } catch (error) {
-      if (!error.message.includes('already exists')) {
-        throw error;
+    // Execute SQL from file to create all tables
+    const statements = sql
+      .split(';')
+      .map(s => s.trim())
+      .filter(s => s.length > 0 && !s.startsWith('--') && !s.toLowerCase().startsWith('create database') && !s.toLowerCase().startsWith('use'));
+
+    for (const statement of statements) {
+      if (statement) {
+        try {
+          await connection.query(statement);
+        } catch (error) {
+          if (!error.message.includes('already exists')) {
+            console.error('Error executing:', statement.substring(0, 50));
+            throw error;
+          }
+        }
       }
-      console.log('   ✓ Users table already exists');
     }
+
+    // Update users table to add is_active if it doesn't exist
+    try {
+      await connection.query('ALTER TABLE users ADD COLUMN is_active BOOLEAN DEFAULT TRUE');
+      console.log('   ✓ Added is_active column to users table');
+    } catch (error) {
+      if (!error.message.includes('Duplicate column name')) {
+        // Column already exists, that's fine
+      }
+    }
+
+    console.log('   ✓ All tables created/verified');
 
     // Create hardcoded admin user
     console.log('\n👤 Creating hardcoded admin user...');

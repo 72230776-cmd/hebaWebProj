@@ -13,11 +13,12 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, register } = useAuth();
+  const { login, register, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   // Get the redirect path from location state, or default to home
+  // But admins always go to admin panel
   const redirectTo = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
@@ -56,8 +57,17 @@ const Login = () => {
     setLoading(false);
 
     if (result.success) {
-      // Redirect to the page they came from, or home
-      navigate(redirectTo, { replace: true });
+      // Check if user is admin - redirect to admin panel
+      const loggedInUser = result.data?.user || result.user;
+      if (loggedInUser?.role === 'admin') {
+        // Small delay to ensure cookie is set before redirect
+        setTimeout(() => {
+          navigate('/admin', { replace: true });
+        }, 200);
+      } else {
+        // Regular users go to the page they came from, or home
+        navigate(redirectTo, { replace: true });
+      }
     } else {
       setError(result.message);
     }

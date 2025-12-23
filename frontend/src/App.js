@@ -7,6 +7,8 @@ import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
+import AdminPanel from "./pages/AdminPanel";
+import AdminRoute from "./components/AdminRoute";
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import { CartProvider } from "./contexts/CartContext";
@@ -17,13 +19,14 @@ function App() {
       <CartProvider>
         <NavBar />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/booking" element={<Booking />} />
+          <Route path="/admin" element={<AdminPanel />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/cart" element={<Cart />} />
+          <Route path="/" element={<AdminRoute><Home /></AdminRoute>} />
+          <Route path="/products" element={<AdminRoute><Products /></AdminRoute>} />
+          <Route path="/about" element={<AdminRoute><About /></AdminRoute>} />
+          <Route path="/contact" element={<AdminRoute><Contact /></AdminRoute>} />
+          <Route path="/booking" element={<AdminRoute><Booking /></AdminRoute>} />
+          <Route path="/cart" element={<AdminRoute><Cart /></AdminRoute>} />
         </Routes>
       </CartProvider>
     </AuthProvider>

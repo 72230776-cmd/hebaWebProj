@@ -1,0 +1,33 @@
+const express = require('express');
+const router = express.Router();
+const { authenticate, isAdmin } = require('../middleware/authMiddleware');
+const productController = require('../controllers/productController');
+const staticProductController = require('../controllers/staticProductController');
+const userController = require('../controllers/userController');
+const orderController = require('../controllers/orderController');
+
+// All admin routes require authentication and admin role
+router.use(authenticate);
+router.use(isAdmin);
+
+// Product routes
+router.get('/products', productController.getAllProducts);
+router.get('/products/static', staticProductController.getStaticProducts);
+router.get('/products/:id', productController.getProductById);
+router.post('/products', productController.createProduct);
+router.put('/products/:id', productController.updateProduct);
+router.delete('/products/:id', productController.deleteProduct);
+
+// User routes
+router.get('/users', userController.getAllUsers);
+router.get('/users/:id', userController.getUserById);
+router.put('/users/:id/password', userController.updateUserPassword);
+router.put('/users/:id/toggle-active', userController.toggleUserActive);
+
+// Order routes
+router.get('/orders', orderController.getAllOrders);
+router.get('/orders/:id', orderController.getOrderById);
+router.put('/orders/:id/status', orderController.updateOrderStatus);
+
+module.exports = router;
+

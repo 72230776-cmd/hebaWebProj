@@ -14,6 +14,22 @@ const NavBar = () => {
     navigate("/");
   };
 
+  // If admin, show minimal navbar with only admin panel and logout
+  if (isAuthenticated() && user?.role === 'admin') {
+    return (
+      <nav className="navbar">
+        <h2 className="logo">Admin Panel</h2>
+        <div className="links">
+          <span className="user-name">Hello, {user?.username}</span>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
+        </div>
+      </nav>
+    );
+  }
+
+  // Regular navbar for non-admin users
   return (
     <nav className="navbar">
       <Link to="/" className="logo-link">

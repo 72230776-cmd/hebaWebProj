@@ -11,10 +11,29 @@ const Products = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("/products.json")
-      .then((res) => res.json())
-      .then((data) => setProducts(data));
+    fetchProducts();
   }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/products");
+      const data = await response.json();
+      if (data.success) {
+        setProducts(data.data.products);
+      } else {
+        // Fallback to static JSON if API fails
+        fetch("/products.json")
+          .then((res) => res.json())
+          .then((data) => setProducts(data));
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      // Fallback to static JSON if API fails
+      fetch("/products.json")
+        .then((res) => res.json())
+        .then((data) => setProducts(data));
+    }
+  };
 
   const handleAddToCart = (product) => {
     if (!isAuthenticated()) {
@@ -39,7 +58,7 @@ const Products = () => {
             <img className="product-img" src={item.image} alt={item.name} />
 
             <h3>{item.name}</h3>
-            <p>{item.desc}</p>
+            <p>{item.description || item.desc || ''}</p>
             <div className="product-price">${item.price}</div>
 
             <button 

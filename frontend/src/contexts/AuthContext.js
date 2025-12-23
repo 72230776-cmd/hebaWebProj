@@ -12,22 +12,39 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const API_URL = 'http://localhost:5000/api/auth';
 
-  // Load user from localStorage on mount
+  // Check authentication status on mount
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user');
-    
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    }
-    setLoading(false);
+    checkAuth();
   }, []);
+
+  // Check if user is authenticated by calling profile endpoint
+  const checkAuth = async () => {
+    try {
+      const response = await fetch(`${API_URL}/profile`, {
+        method: 'GET',
+        credentials: 'include', // Send cookies
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.data.user);
+        } else {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Register function
   const register = async (username, email, password) => {
@@ -37,17 +54,17 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Send cookies
         body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setToken(data.data.token);
         setUser(data.data.user);
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        return { success: true, message: data.message };
+        // User is already set from response, no need to check auth immediately
+        // checkAuth will be called on next mount or when needed
+        return { success: true, message: data.message, data: data.data };
       } else {
         return { success: false, message: data.message };
       }
@@ -64,17 +81,17 @@ export const AuthProvider = ({ children }) => {
         headers: {
           'Content-Type': 'application/json',
         },
+        credentials: 'include', // Send cookies
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (data.success) {
-        setToken(data.data.token);
         setUser(data.data.user);
-        localStorage.setItem('token', data.data.token);
-        localStorage.setItem('user', JSON.stringify(data.data.user));
-        return { success: true, message: data.message };
+        // User is already set from response, no need to check auth immediately
+        // checkAuth will be called on next mount or when needed
+        return { success: true, message: data.message, data: data.data };
       } else {
         return { success: false, message: data.message };
       }
@@ -84,26 +101,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Logout function
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const logout = async () => {
+    try {
+      await fetch(`${API_URL}/logout`, {
+        method: 'POST',
+        credentials: 'include', // Send cookies
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+    }
   };
 
   // Check if user is authenticated
   const isAuthenticated = () => {
-    return !!token && !!user;
+    return !!user;
   };
 
   const value = {
     user,
-    token,
     loading,
     register,
     login,
     logout,
     isAuthenticated,
+    checkAuth, // Expose checkAuth for components that need to refresh auth
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
