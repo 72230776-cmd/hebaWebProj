@@ -3,11 +3,12 @@ const jwt = require('jsonwebtoken');
 
 // Generate JWT Token
 const generateToken = (userId, role) => {
-  const secret = process.env.JWT_SECRET || 'africa_market_super_secret_jwt_key_2024_secure_random_string';
+  const secret = process.env.JWT_SECRET || 'fallback-secret-change-in-production';
+  const expire = process.env.JWT_EXPIRE || '30d';
   return jwt.sign(
     { userId, role },
     secret,
-    { expiresIn: process.env.JWT_EXPIRE || '7d' }
+    { expiresIn: expire }
   );
 };
 
@@ -62,17 +63,15 @@ exports.register = async (req, res) => {
 
     // Generate token
     const token = generateToken(newUser.id, newUser.role);
-    console.log('🔑 Token generated for new user:', newUser.username);
 
-    // Set JWT in httpOnly cookie
-    res.cookie('token', token, {
-      httpOnly: true, // Prevents XSS attacks - JavaScript cannot access this cookie
-      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/' // Ensure cookie is available for all paths
-    });
-    console.log('✅ Cookie set successfully');
+    // Set httpOnly cookie
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    };
+    res.cookie('token', token, cookieOptions);
 
     res.status(201).json({
       success: true,
@@ -84,6 +83,7 @@ exports.register = async (req, res) => {
           email: newUser.email,
           role: newUser.role
         }
+        // Token is in httpOnly cookie, not in response
       }
     });
   } catch (error) {
@@ -129,17 +129,15 @@ exports.login = async (req, res) => {
 
     // Generate token
     const token = generateToken(user.id, user.role);
-    console.log('🔑 Token generated for user:', user.username);
 
-    // Set JWT in httpOnly cookie
-    res.cookie('token', token, {
-      httpOnly: true, // Prevents XSS attacks - JavaScript cannot access this cookie
-      secure: process.env.NODE_ENV === 'production', // Only send over HTTPS in production
-      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      path: '/' // Ensure cookie is available for all paths
-    });
-    console.log('✅ Cookie set successfully');
+    // Set httpOnly cookie
+    const cookieOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+    };
+    res.cookie('token', token, cookieOptions);
 
     res.json({
       success: true,
@@ -151,6 +149,7 @@ exports.login = async (req, res) => {
           email: user.email,
           role: user.role
         }
+        // Token is in httpOnly cookie, not in response
       }
     });
   } catch (error) {
@@ -166,15 +165,6 @@ exports.login = async (req, res) => {
 // Get current user profile
 exports.getProfile = async (req, res) => {
   try {
-    // Check if req.user exists (set by authenticate middleware)
-    if (!req.user || !req.user.userId) {
-      console.error('❌ getProfile: req.user is missing');
-      return res.status(401).json({
-        success: false,
-        message: 'Authentication required'
-      });
-    }
-
     const user = await User.findById(req.user.userId);
     if (!user) {
       return res.status(404).json({
@@ -188,8 +178,7 @@ exports.getProfile = async (req, res) => {
       data: { user }
     });
   } catch (error) {
-    console.error('🔴 Get profile error:', error);
-    console.error('🔴 Error stack:', error.stack);
+    console.error('Get profile error:', error);
     res.status(500).json({
       success: false,
       message: 'Error fetching profile',
@@ -199,15 +188,15 @@ exports.getProfile = async (req, res) => {
 };
 
 // Logout user
-exports.logout = (req, res) => {
+exports.logout = async (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict'
+    sameSite: 'lax'
   });
   res.json({
     success: true,
-    message: 'Logout successful'
+    message: 'Logged out successfully'
   });
 };
 
