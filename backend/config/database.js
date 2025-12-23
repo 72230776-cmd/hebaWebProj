@@ -2,13 +2,15 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 // Determine database type
-const DB_TYPE = process.env.DB_TYPE || (process.env.DB_PORT == 5432 ? 'postgres' : 'mysql');
+// Check DB_TYPE first, then check port (5432 = PostgreSQL, 3306 = MySQL)
+const DB_PORT = parseInt(process.env.DB_PORT) || 3306;
+const DB_TYPE = process.env.DB_TYPE || (DB_PORT === 5432 ? 'postgres' : 'mysql');
 
 let pool;
 let promisePool;
 let dbType = DB_TYPE;
 
-if (DB_TYPE === 'postgres' || process.env.DB_PORT == 5432) {
+if (DB_TYPE === 'postgres' || DB_PORT === 5432) {
   // PostgreSQL connection
   const { Pool: PgPool } = require('pg');
   
