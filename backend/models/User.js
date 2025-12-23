@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const { getInsertId } = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 class User {
@@ -9,11 +10,17 @@ class User {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
     
-    const query = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)';
-    const [result] = await db.promisePool.execute(query, [username, email, hashedPassword, role]);
+    let query = 'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)';
+    if (db.dbType === 'postgres') {
+      query += ' RETURNING id';
+    }
+    const [rows, result] = await db.promisePool.execute(query, [username, email, hashedPassword, role]);
+    
+    // Get the ID (works for both MySQL and PostgreSQL)
+    const id = db.dbType === 'postgres' ? (rows[0] && rows[0].id) : getInsertId(result, db.dbType);
     
     return {
-      id: result.insertId,
+      id: id,
       username,
       email,
       role
@@ -22,14 +29,14 @@ class User {
 
   // Find user by email
   static async findByEmail(email) {
-    const query = 'SELECT id, username, email, password, role, is_active, created_at FROM users WHERE email = ?';
+    const query = 'SELECT * FROM users WHERE email = ?';
     const [rows] = await db.promisePool.execute(query, [email]);
     return rows[0] || null;
   }
 
   // Find user by username
   static async findByUsername(username) {
-    const query = 'SELECT id, username, email, password, role, is_active, created_at FROM users WHERE username = ?';
+    const query = 'SELECT * FROM users WHERE username = ?';
     const [rows] = await db.promisePool.execute(query, [username]);
     return rows[0] || null;
   }
@@ -41,10 +48,10 @@ class User {
     return rows[0] || null;
   }
 
-  // Get all users (excluding admins - only regular users)
+  // Get all users
   static async findAll() {
-    const query = 'SELECT id, username, email, role, is_active, created_at FROM users WHERE role = ? ORDER BY created_at DESC';
-    const [rows] = await db.promisePool.execute(query, ['user']);
+    const query = 'SELECT id, username, email, role, is_active, created_at FROM users ORDER BY created_at DESC';
+    const [rows] = await db.promisePool.execute(query);
     return rows;
   }
 

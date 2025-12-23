@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const { getInsertId } = require('../config/database');
 
 class Order {
   // Get all orders
@@ -54,9 +55,12 @@ class Order {
 
     try {
       // Create order
-      const orderQuery = 'INSERT INTO orders (user_id, total_amount, shipping_address) VALUES (?, ?, ?)';
-      const [orderResult] = await connection.execute(orderQuery, [user_id, total_amount, shipping_address]);
-      const orderId = orderResult.insertId;
+      let orderQuery = 'INSERT INTO orders (user_id, total_amount, shipping_address) VALUES (?, ?, ?)';
+      if (db.dbType === 'postgres') {
+        orderQuery += ' RETURNING id';
+      }
+      const [orderRows, orderResult] = await connection.execute(orderQuery, [user_id, total_amount, shipping_address]);
+      const orderId = db.dbType === 'postgres' ? (orderRows[0] && orderRows[0].id) : getInsertId(orderResult, db.dbType);
 
       // Create order items
       for (const item of items) {

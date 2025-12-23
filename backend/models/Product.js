@@ -1,4 +1,5 @@
 const db = require('../config/database');
+const { getInsertId, getAffectedRows } = require('../config/database');
 
 class Product {
   // Get all products
@@ -18,11 +19,16 @@ class Product {
   // Create a new product
   static async create(productData) {
     const { name, price, description, image } = productData;
-    const query = 'INSERT INTO products (name, price, description, image) VALUES (?, ?, ?, ?)';
-    const [result] = await db.promisePool.execute(query, [name, price, description, image]);
+    let query = 'INSERT INTO products (name, price, description, image) VALUES (?, ?, ?, ?)';
+    if (db.dbType === 'postgres') {
+      query += ' RETURNING id';
+    }
+    const [rows, result] = await db.promisePool.execute(query, [name, price, description, image]);
+    
+    const id = db.dbType === 'postgres' ? (rows[0] && rows[0].id) : getInsertId(result, db.dbType);
     
     return {
-      id: result.insertId,
+      id: id,
       name,
       price,
       description,
@@ -42,8 +48,8 @@ class Product {
   // Delete a product
   static async delete(id) {
     const query = 'DELETE FROM products WHERE id = ?';
-    const [result] = await db.promisePool.execute(query, [id]);
-    return result.affectedRows > 0;
+    const [, result] = await db.promisePool.execute(query, [id]);
+    return getAffectedRows(result, db.dbType) > 0;
   }
 }
 
