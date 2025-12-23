@@ -149,6 +149,26 @@ function getAffectedRows(result, dbType) {
   }
 }
 
+// Add getConnection method for compatibility (used in server.js)
+if (dbType === 'postgres') {
+  // PostgreSQL version - wraps pool.connect() in callback style
+  pool.getConnection = (callback) => {
+    pool.connect()
+      .then(client => {
+        // Create a connection-like object
+        const connection = {
+          release: () => client.release(),
+          query: (text, params) => client.query(text, params),
+          execute: (text, params) => client.query(text, params)
+        };
+        callback(null, connection);
+      })
+      .catch(err => {
+        callback(err, null);
+      });
+  };
+}
+
 module.exports = pool;
 module.exports.promisePool = promisePool;
 module.exports.dbType = dbType;
