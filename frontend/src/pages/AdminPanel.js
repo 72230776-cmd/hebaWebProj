@@ -78,12 +78,20 @@ const ProductsManagement = () => {
 
   const fetchProducts = async () => {
     try {
+      // Get token from sessionStorage as fallback if cookies are blocked
+      const fallbackToken = sessionStorage.getItem('auth_token');
+      const headers = { 'Content-Type': 'application/json' };
+      
+      // Add Authorization header if we have a fallback token
+      if (fallbackToken) {
+        headers['Authorization'] = `Bearer ${fallbackToken}`;
+        console.log('🔑 Using fallback token from sessionStorage');
+      }
+      
       const response = await fetch(`${API_URL}/products`, {
         method: 'GET',
         credentials: 'include', // Important: send cookies
-        headers: { 
-          'Content-Type': 'application/json'
-        }
+        headers: headers
       });
       
       if (!response.ok) {
@@ -117,9 +125,7 @@ const ProductsManagement = () => {
       const response = await fetch(`${API_URL}/products/static`, {
         method: 'GET',
         credentials: 'include', // Important: send cookies
-        headers: { 
-          'Content-Type': 'application/json'
-        }
+        headers: getAuthHeaders()
       });
       const data = await response.json();
       if (data.success) {
@@ -143,9 +149,7 @@ const ProductsManagement = () => {
       const response = await fetch(url, {
         method,
         credentials: 'include', // Important: send cookies
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify(formData)
       });
 
@@ -179,9 +183,7 @@ const ProductsManagement = () => {
       const response = await fetch(`${API_URL}/products/${id}`, {
         method: 'DELETE',
         credentials: 'include', // Important: send cookies
-        headers: { 
-          'Content-Type': 'application/json'
-        }
+        headers: getAuthHeaders()
       });
       const data = await response.json();
       if (data.success) {
@@ -333,6 +335,16 @@ const UsersManagement = () => {
     (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
   const API_URL = `${API_BASE_URL}/api/admin`;
 
+  // Helper function to get headers with fallback token
+  const getAuthHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const fallbackToken = sessionStorage.getItem('auth_token');
+    if (fallbackToken) {
+      headers['Authorization'] = `Bearer ${fallbackToken}`;
+    }
+    return headers;
+  };
+
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -342,9 +354,7 @@ const UsersManagement = () => {
       const response = await fetch(`${API_URL}/users`, {
         method: 'GET',
         credentials: 'include', // Important: send cookies
-        headers: { 
-          'Content-Type': 'application/json'
-        }
+        headers: getAuthHeaders()
       });
       const data = await response.json();
       if (data.success) {
@@ -367,9 +377,7 @@ const UsersManagement = () => {
       const response = await fetch(`${API_URL}/users/${userId}/password`, {
         method: 'PUT',
         credentials: 'include', // Important: send cookies
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ password: newPassword })
       });
       const data = await response.json();
@@ -388,9 +396,7 @@ const UsersManagement = () => {
       const response = await fetch(`${API_URL}/users/${userId}/toggle-active`, {
         method: 'PUT',
         credentials: 'include', // Important: send cookies
-        headers: { 
-          'Content-Type': 'application/json'
-        }
+        headers: getAuthHeaders()
       });
       const data = await response.json();
       if (data.success) {
@@ -474,6 +480,16 @@ const OrdersManagement = () => {
     (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
   const API_URL = `${API_BASE_URL}/api/admin`;
 
+  // Helper function to get headers with fallback token
+  const getAuthHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const fallbackToken = sessionStorage.getItem('auth_token');
+    if (fallbackToken) {
+      headers['Authorization'] = `Bearer ${fallbackToken}`;
+    }
+    return headers;
+  };
+
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -483,9 +499,7 @@ const OrdersManagement = () => {
       const response = await fetch(`${API_URL}/orders`, {
         method: 'GET',
         credentials: 'include', // Important: send cookies
-        headers: { 
-          'Content-Type': 'application/json'
-        }
+        headers: getAuthHeaders()
       });
       const data = await response.json();
       if (data.success) {

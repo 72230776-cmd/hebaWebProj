@@ -84,6 +84,7 @@ exports.register = async (req, res) => {
     
     res.cookie('token', token, cookieOptions);
 
+    // Return token in response as fallback for browsers that block third-party cookies
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
@@ -93,8 +94,8 @@ exports.register = async (req, res) => {
           username: newUser.username,
           email: newUser.email,
           role: newUser.role
-        }
-        // Token is in httpOnly cookie, not in response
+        },
+        token: token // Fallback token if cookies are blocked
       }
     });
   } catch (error) {
@@ -160,7 +161,13 @@ exports.login = async (req, res) => {
     });
     
     res.cookie('token', token, cookieOptions);
+    
+    // Log the response headers to verify cookie is being set
+    console.log('📤 Login response - Cookie header should be set');
+    console.log('📤 Response headers:', res.getHeaders());
 
+    // Return token in response as fallback for browsers that block third-party cookies
+    // Frontend will use cookie if available, otherwise use token from response
     res.json({
       success: true,
       message: 'Login successful',
@@ -170,8 +177,8 @@ exports.login = async (req, res) => {
           username: user.username,
           email: user.email,
           role: user.role
-        }
-        // Token is in httpOnly cookie, not in response
+        },
+        token: token // Fallback token if cookies are blocked
       }
     });
   } catch (error) {

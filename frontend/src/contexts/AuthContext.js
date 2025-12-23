@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { API_URL } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -14,25 +13,37 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
 
-  const AUTH_API_URL = API_URL.AUTH;
+  // API URL - use production backend when deployed, localhost for development
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/auth`;
 
   // Check authentication status on mount
   useEffect(() => {
     checkAuth();
   }, []);
 
-  // Check if user is authenticated by calling profile endpoint
+  // Check if user is authenticated via cookies
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${AUTH_API_URL}/profile`, {
+      // Get fallback token from sessionStorage
+      const fallbackToken = sessionStorage.getItem('auth_token');
+      const headers = {};
+      if (fallbackToken) {
+        headers['Authorization'] = `Bearer ${fallbackToken}`;
+      }
+      
+      const response = await fetch(`${API_URL}/profile`, {
         method: 'GET',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
+        headers: headers
       });
 
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
+        if (data.success && data.data.user) {
           setUser(data.data.user);
         } else {
           setUser(null);
@@ -41,6 +52,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
+      console.error('Auth check error:', error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -49,69 +61,92 @@ export const AuthProvider = ({ children }) => {
 
   // Register function
   const register = async (username, email, password) => {
+    setAuthLoading(true);
     try {
-      const response = await fetch(`${AUTH_API_URL}/register`, {
+      const response = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send/receive cookies
         body: JSON.stringify({ username, email, password }),
       });
 
       const data = await response.json();
 
       if (data.success) {
+        // User data is in the response
+        // Token might be in httpOnly cookie OR in response (fallback for blocked cookies)
         setUser(data.data.user);
-        // User is already set from response, no need to check auth immediately
-        // checkAuth will be called on next mount or when needed
-        return { success: true, message: data.message, data: data.data };
+        
+        // Store token in sessionStorage as fallback if cookies are blocked
+        if (data.data.token) {
+          sessionStorage.setItem('auth_token', data.data.token);
+        }
+        
+        return { success: true, message: data.message };
       } else {
-        return { success: false, message: data.message };
+        return { success: false, message: data.message || 'Registration failed' };
       }
     } catch (error) {
+      console.error('Registration error:', error);
       return { success: false, message: 'Network error. Please try again.' };
+    } finally {
+      setAuthLoading(false);
     }
   };
 
   // Login function
   const login = async (email, password) => {
+    setAuthLoading(true);
     try {
-      const response = await fetch(`${AUTH_API_URL}/login`, {
+      const response = await fetch(`${API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send/receive cookies
         body: JSON.stringify({ email, password }),
       });
 
       const data = await response.json();
 
       if (data.success) {
+        // User data is in the response
+        // Token might be in httpOnly cookie OR in response (fallback for blocked cookies)
         setUser(data.data.user);
-        // User is already set from response, no need to check auth immediately
-        // checkAuth will be called on next mount or when needed
-        return { success: true, message: data.message, data: data.data };
+        
+        // Store token in sessionStorage as fallback if cookies are blocked
+        if (data.data.token) {
+          sessionStorage.setItem('auth_token', data.data.token);
+          console.log('💾 Token stored in sessionStorage as fallback');
+        }
+        
+        return { success: true, message: data.message };
       } else {
-        return { success: false, message: data.message };
+        return { success: false, message: data.message || 'Login failed' };
       }
     } catch (error) {
+      console.error('Login error:', error);
       return { success: false, message: 'Network error. Please try again.' };
+    } finally {
+      setAuthLoading(false);
     }
   };
 
   // Logout function
   const logout = async () => {
     try {
-      await fetch(`${AUTH_API_URL}/logout`, {
+      await fetch(`${API_URL}/logout`, {
         method: 'POST',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
       });
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
       setUser(null);
+      // Clear fallback token
+      sessionStorage.removeItem('auth_token');
     }
   };
 
@@ -123,13 +158,13 @@ export const AuthProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    authLoading,
     register,
     login,
     logout,
     isAuthenticated,
-    checkAuth, // Expose checkAuth for components that need to refresh auth
+    checkAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
-

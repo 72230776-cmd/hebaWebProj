@@ -11,12 +11,19 @@ exports.authenticate = async (req, res, next) => {
     // Get token from cookies (httpOnly cookie)
     let token = req.cookies?.token;
     
-    // Fallback to Authorization header for backward compatibility
+    // Fallback 1: Authorization header
     if (!token) {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith('Bearer ')) {
         token = authHeader.substring(7);
+        console.log('🔑 Token from Authorization header');
       }
+    }
+    
+    // Fallback 2: Check if token is in request body (for some edge cases)
+    if (!token && req.body && req.body.token) {
+      token = req.body.token;
+      console.log('🔑 Token from request body');
     }
     
     if (!token) {
