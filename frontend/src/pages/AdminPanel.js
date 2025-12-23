@@ -142,9 +142,9 @@ const ProductsManagement = () => {
 
       const response = await fetch(url, {
         method,
+        credentials: 'include', // Important: send cookies
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${tokenToUse}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(formData)
       });
@@ -178,8 +178,8 @@ const ProductsManagement = () => {
     try {
       const response = await fetch(`${API_URL}/products/${id}`, {
         method: 'DELETE',
+        credentials: 'include', // Important: send cookies
         headers: { 
-          credentials: 'include', // Important: send cookies
           'Content-Type': 'application/json'
         }
       });
