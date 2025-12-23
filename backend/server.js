@@ -13,14 +13,25 @@ const PORT = process.env.PORT || 5000;
 // CORS configuration - allow credentials (cookies) from frontend
 const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://72230776-cmd.github.io',
-    frontendUrl
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'https://72230776-cmd.github.io',
+      'https://72230776-cmd.github.io/hebaWebProj',
+      frontendUrl
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin) || origin.includes('72230776-cmd.github.io')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Important: allow cookies
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Set-Cookie']
 }));
 
 // Middleware

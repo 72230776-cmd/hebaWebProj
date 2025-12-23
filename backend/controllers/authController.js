@@ -68,11 +68,20 @@ exports.register = async (req, res) => {
     // For cross-origin (GitHub Pages to Render), use sameSite: 'none' and secure: true
     const cookieOptions = {
       httpOnly: true,
-      secure: true, // Always true for production (HTTPS required)
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-origin
+      secure: true, // Required for sameSite: 'none'
+      sameSite: 'none', // Required for cross-origin cookies
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      path: '/' // Available on all paths
+      path: '/', // Available on all paths
+      // Don't set domain - let browser handle it for cross-origin
     };
+    
+    console.log('🍪 Setting cookie with options:', {
+      httpOnly: cookieOptions.httpOnly,
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite,
+      path: cookieOptions.path
+    });
+    
     res.cookie('token', token, cookieOptions);
 
     res.status(201).json({
@@ -136,11 +145,20 @@ exports.login = async (req, res) => {
     // For cross-origin (GitHub Pages to Render), use sameSite: 'none' and secure: true
     const cookieOptions = {
       httpOnly: true,
-      secure: true, // Always true for production (HTTPS required)
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-origin
+      secure: true, // Required for sameSite: 'none'
+      sameSite: 'none', // Required for cross-origin cookies
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      path: '/' // Available on all paths
+      path: '/', // Available on all paths
+      // Don't set domain - let browser handle it for cross-origin
     };
+    
+    console.log('🍪 Setting cookie with options:', {
+      httpOnly: cookieOptions.httpOnly,
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite,
+      path: cookieOptions.path
+    });
+    
     res.cookie('token', token, cookieOptions);
 
     res.json({
@@ -195,8 +213,9 @@ exports.getProfile = async (req, res) => {
 exports.logout = async (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    secure: true,
+    sameSite: 'none',
+    path: '/'
   });
   res.json({
     success: true,
