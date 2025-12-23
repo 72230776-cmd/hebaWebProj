@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { API_URL } from '../config/api';
 
 const AuthContext = createContext();
 
@@ -14,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = 'http://localhost:5000/api/auth';
+  const AUTH_API_URL = API_URL.AUTH;
 
   // Check authentication status on mount
   useEffect(() => {
@@ -24,7 +25,7 @@ export const AuthProvider = ({ children }) => {
   // Check if user is authenticated by calling profile endpoint
   const checkAuth = async () => {
     try {
-      const response = await fetch(`${API_URL}/profile`, {
+      const response = await fetch(`${AUTH_API_URL}/profile`, {
         method: 'GET',
         credentials: 'include', // Send cookies
       });
@@ -49,7 +50,7 @@ export const AuthProvider = ({ children }) => {
   // Register function
   const register = async (username, email, password) => {
     try {
-      const response = await fetch(`${API_URL}/register`, {
+      const response = await fetch(`${AUTH_API_URL}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +77,7 @@ export const AuthProvider = ({ children }) => {
   // Login function
   const login = async (email, password) => {
     try {
-      const response = await fetch(`${API_URL}/login`, {
+      const response = await fetch(`${AUTH_API_URL}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -103,7 +104,7 @@ export const AuthProvider = ({ children }) => {
   // Logout function
   const logout = async () => {
     try {
-      await fetch(`${API_URL}/logout`, {
+      await fetch(`${AUTH_API_URL}/logout`, {
         method: 'POST',
         credentials: 'include', // Send cookies
       });
