@@ -65,11 +65,13 @@ exports.register = async (req, res) => {
     const token = generateToken(newUser.id, newUser.role);
 
     // Set httpOnly cookie
+    // For cross-origin (GitHub Pages to Render), use sameSite: 'none' and secure: true
     const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      secure: true, // Always true for production (HTTPS required)
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-origin
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: '/' // Available on all paths
     };
     res.cookie('token', token, cookieOptions);
 
@@ -131,11 +133,13 @@ exports.login = async (req, res) => {
     const token = generateToken(user.id, user.role);
 
     // Set httpOnly cookie
+    // For cross-origin (GitHub Pages to Render), use sameSite: 'none' and secure: true
     const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days
+      secure: true, // Always true for production (HTTPS required)
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // 'none' for cross-origin
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+      path: '/' // Available on all paths
     };
     res.cookie('token', token, cookieOptions);
 

@@ -10,24 +10,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS configuration - allow credentials for cookies
-const allowedOrigins = [
-  'http://localhost:3000',
-  process.env.FRONTEND_URL,
-  'https://72230776-cmd.github.io'
-].filter(Boolean); // Remove undefined values
-
+// CORS configuration - allow credentials (cookies) from frontend
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(null, true); // Allow all origins in development, restrict in production
-    }
-  },
-  credentials: true // Allow cookies to be sent
+  origin: [
+    'http://localhost:3000',
+    'https://72230776-cmd.github.io',
+    frontendUrl
+  ],
+  credentials: true, // Important: allow cookies
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Middleware

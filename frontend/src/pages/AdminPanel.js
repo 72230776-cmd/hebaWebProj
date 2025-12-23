@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { API_URL } from '../config/api';
 import '../styles/admin.css';
 
 const AdminPanel = () => {
@@ -59,7 +58,6 @@ const AdminPanel = () => {
 
 // Products Management Component
 const ProductsManagement = () => {
-  const { loading: authLoading } = useAuth();
   const [products, setProducts] = useState([]);
   const [staticProducts, setStaticProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -68,25 +66,21 @@ const ProductsManagement = () => {
   const [viewingProduct, setViewingProduct] = useState(null);
   const [formData, setFormData] = useState({ name: '', price: '', description: '', image: '' });
 
-  const ADMIN_API_URL = API_URL.ADMIN;
+  // API URL - use production backend when deployed, localhost for development
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/admin`;
 
   useEffect(() => {
-    // Wait for auth to be ready before fetching
-    if (!authLoading) {
-      // Small delay to ensure cookie is available
-      const timer = setTimeout(() => {
-        fetchProducts();
-        fetchStaticProducts();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [authLoading]);
+    fetchProducts();
+    fetchStaticProducts();
+  }, []);
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${ADMIN_API_URL}/products`, {
+      const response = await fetch(`${API_URL}/products`, {
         method: 'GET',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
         headers: { 
           'Content-Type': 'application/json'
         }
@@ -120,9 +114,9 @@ const ProductsManagement = () => {
 
   const fetchStaticProducts = async () => {
     try {
-      const response = await fetch(`${ADMIN_API_URL}/products/static`, {
+      const response = await fetch(`${API_URL}/products/static`, {
         method: 'GET',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
         headers: { 
           'Content-Type': 'application/json'
         }
@@ -142,15 +136,15 @@ const ProductsManagement = () => {
     
     try {
       const url = editingProduct 
-        ? `${ADMIN_API_URL}/products/${editingProduct.id}`
-        : `${ADMIN_API_URL}/products`;
+        ? `${API_URL}/products/${editingProduct.id}`
+        : `${API_URL}/products`;
       const method = editingProduct ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
-        credentials: 'include', // Send cookies
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${tokenToUse}`
         },
         body: JSON.stringify(formData)
       });
@@ -182,10 +176,10 @@ const ProductsManagement = () => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
-      const response = await fetch(`${ADMIN_API_URL}/products/${id}`, {
+      const response = await fetch(`${API_URL}/products/${id}`, {
         method: 'DELETE',
-        credentials: 'include', // Send cookies
         headers: { 
+          credentials: 'include', // Important: send cookies
           'Content-Type': 'application/json'
         }
       });
@@ -334,7 +328,10 @@ const UsersManagement = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
 
-  const ADMIN_API_URL = API_URL.ADMIN;
+  // API URL - use production backend when deployed, localhost for development
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/admin`;
 
   useEffect(() => {
     fetchUsers();
@@ -342,16 +339,16 @@ const UsersManagement = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch(`${ADMIN_API_URL}/users`, {
+      const response = await fetch(`${API_URL}/users`, {
         method: 'GET',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
         headers: { 
           'Content-Type': 'application/json'
         }
       });
       const data = await response.json();
       if (data.success) {
-        setUsers(data.data.users || []);
+        setUsers(data.data.users);
       }
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -367,9 +364,9 @@ const UsersManagement = () => {
     }
 
     try {
-      const response = await fetch(`${ADMIN_API_URL}/users/${userId}/password`, {
+      const response = await fetch(`${API_URL}/users/${userId}/password`, {
         method: 'PUT',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
         headers: {
           'Content-Type': 'application/json'
         },
@@ -388,9 +385,9 @@ const UsersManagement = () => {
 
   const handleToggleActive = async (userId) => {
     try {
-      const response = await fetch(`${ADMIN_API_URL}/users/${userId}/toggle-active`, {
+      const response = await fetch(`${API_URL}/users/${userId}/toggle-active`, {
         method: 'PUT',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
         headers: { 
           'Content-Type': 'application/json'
         }
@@ -468,28 +465,24 @@ const UsersManagement = () => {
 
 // Orders Management Component
 const OrdersManagement = () => {
-  const { loading: authLoading } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewingOrder, setViewingOrder] = useState(null);
 
-  const ADMIN_API_URL = API_URL.ADMIN;
+  // API URL - use production backend when deployed, localhost for development
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/admin`;
 
   useEffect(() => {
-    // Wait for auth to be ready before fetching
-    if (!authLoading) {
-      const timer = setTimeout(() => {
-        fetchOrders();
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [authLoading]);
+    fetchOrders();
+  }, []);
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`${ADMIN_API_URL}/orders`, {
+      const response = await fetch(`${API_URL}/orders`, {
         method: 'GET',
-        credentials: 'include', // Send cookies
+        credentials: 'include', // Important: send cookies
         headers: { 
           'Content-Type': 'application/json'
         }
