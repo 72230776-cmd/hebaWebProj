@@ -4,9 +4,15 @@ require('dotenv').config();
 // Initialize Resend with API key
 const resend = new Resend(process.env.RESEND_API_KEY || 're_V7ahoZi2_4A39G9ckjsUoqfP63NXgrZ7j');
 
+// Get from email - must be from verified domain for production
+// For testing, can use onboarding@resend.dev but only to account owner email
+const FROM_EMAIL = process.env.EMAIL_FROM || 'onboarding@resend.dev';
+
 // Verify Resend is configured
 if (process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 're_V7ahoZi2_4A39G9ckjsUoqfP63NXgrZ7j') {
   console.log('✅ Resend email service configured');
+  console.log(`   From email: ${FROM_EMAIL}`);
+  console.log('   ⚠️  Note: To send to all recipients, verify a domain at resend.com/domains');
 } else {
   console.warn('⚠️ Resend API key not found - emails may not work');
 }
@@ -16,8 +22,10 @@ const emailService = {
   // Send invoice email when order is created
   async sendInvoiceEmail(order, user, items) {
     try {
-      const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev'; // Resend default
       const orderTotal = parseFloat(order.total_amount) + parseFloat(order.shipping_cost || 5.00);
+      
+      // Check if we can send to this recipient (Resend free tier limitation)
+      // For now, we'll try to send and handle the error gracefully
       
       const emailHtml = `
         <!DOCTYPE html>
@@ -80,7 +88,7 @@ const emailService = {
       `;
 
       const { data, error } = await resend.emails.send({
-        from: `Africa Market <${fromEmail}>`,
+        from: `Africa Market <${FROM_EMAIL}>`,
         to: user.email,
         subject: `Order Invoice #${order.id} - Status: Delivering`,
         html: emailHtml
@@ -88,6 +96,19 @@ const emailService = {
 
       if (error) {
         console.error('❌ Resend error:', error);
+        
+        // Check if it's a domain verification error
+        if (error.statusCode === 403 && error.message && error.message.includes('verify a domain')) {
+          console.error('   ⚠️  Domain verification required for Resend');
+          console.error('   📝 To fix: Verify a domain at https://resend.com/domains');
+          console.error('   📝 Then update EMAIL_FROM in environment variables');
+          return { 
+            success: false, 
+            error: 'Email service requires domain verification. Order was created successfully.',
+            requiresDomainVerification: true
+          };
+        }
+        
         return { success: false, error: error.message };
       }
 
@@ -103,7 +124,6 @@ const emailService = {
   // Send delivery confirmation email
   async sendDeliveryEmail(order, user, items) {
     try {
-      const fromEmail = process.env.EMAIL_FROM || 'onboarding@resend.dev'; // Resend default
       const orderTotal = parseFloat(order.total_amount) + parseFloat(order.shipping_cost || 5.00);
       
       const emailHtml = `
@@ -152,7 +172,7 @@ const emailService = {
       `;
 
       const { data, error } = await resend.emails.send({
-        from: `Africa Market <${fromEmail}>`,
+        from: `Africa Market <${FROM_EMAIL}>`,
         to: user.email,
         subject: `Order #${order.id} Has Been Delivered`,
         html: emailHtml
@@ -160,6 +180,19 @@ const emailService = {
 
       if (error) {
         console.error('❌ Resend error:', error);
+        
+        // Check if it's a domain verification error
+        if (error.statusCode === 403 && error.message && error.message.includes('verify a domain')) {
+          console.error('   ⚠️  Domain verification required for Resend');
+          console.error('   📝 To fix: Verify a domain at https://resend.com/domains');
+          console.error('   📝 Then update EMAIL_FROM in environment variables');
+          return { 
+            success: false, 
+            error: 'Email service requires domain verification. Order status was updated successfully.',
+            requiresDomainVerification: true
+          };
+        }
+        
         return { success: false, error: error.message };
       }
 

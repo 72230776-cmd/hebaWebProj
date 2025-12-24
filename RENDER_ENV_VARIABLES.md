@@ -33,11 +33,19 @@ RESEND_API_KEY=re_V7ahoZi2_4A39G9ckjsUoqfP63NXgrZ7j
 EMAIL_FROM=onboarding@resend.dev
 ```
 
-**Note**: 
-- Using Resend email service (more reliable than SMTP on Render)
-- `EMAIL_FROM` is optional - defaults to `onboarding@resend.dev` if not set
-- You can verify your domain in Resend dashboard to use a custom "from" email
+**Important**: 
+- **Domain Verification Required**: Resend's free tier only allows sending to your account email (`72230776@students.liu.edu.lb`) when using `onboarding@resend.dev`
+- **To send to all users**: You must verify a domain at https://resend.com/domains
+- **After verification**: Update `EMAIL_FROM` to use your verified domain (e.g., `noreply@yourdomain.com`)
 - Resend free tier: 3,000 emails/month
+
+**Steps to verify domain:**
+1. Go to https://resend.com/domains
+2. Click "Add Domain"
+3. Add your domain (e.g., `yourdomain.com`)
+4. Add the DNS records Resend provides to your domain's DNS settings
+5. Wait for verification (usually a few minutes)
+6. Update `EMAIL_FROM` in Render to use your verified domain email
 
 **Important Notes for Email:**
 - Remove spaces from the app password when adding to Render (no spaces)
