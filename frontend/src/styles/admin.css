@@ -661,6 +661,11 @@
   background: #cc0000;
 }
 
+.contact-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* BOOKINGS LIST (Card-based like Orders) */
 .bookings-list {
   display: flex;
@@ -721,6 +726,11 @@
 
 .booking-card button.delete-btn:hover {
   background: #cc0000;
+}
+
+.booking-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* CONTACT DETAILS MODAL */
