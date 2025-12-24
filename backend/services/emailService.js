@@ -115,11 +115,19 @@ const emailService = {
         `
       };
 
-      const info = await transporter.sendMail(mailOptions);
+      // Add timeout wrapper for email sending
+      const emailPromise = transporter.sendMail(mailOptions);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Email send timeout after 30 seconds')), 30000)
+      );
+      
+      const info = await Promise.race([emailPromise, timeoutPromise]);
       console.log('📧 Invoice email sent:', info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Error sending invoice email:', error);
+      console.error('❌ Error sending invoice email:', error.message);
+      console.error('   Order will still be created - email is non-critical');
+      // Don't throw - email failure shouldn't break order creation
       return { success: false, error: error.message };
     }
   },
