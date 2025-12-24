@@ -340,7 +340,7 @@ const ProductsManagement = () => {
   );
 };
 
-// Users Management Component
+// Users Management Component - Password change only, no disable/enable
 const UsersManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
