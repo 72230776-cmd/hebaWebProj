@@ -139,6 +139,8 @@ const ProductsManagement = () => {
         : `${API_URL}/products`;
       const method = editingProduct ? 'PUT' : 'POST';
 
+      console.log('📤 Submitting product:', { url, method, formData });
+
       const response = await fetch(url, {
         method,
         credentials: 'include', // Important: send cookies
@@ -146,7 +148,26 @@ const ProductsManagement = () => {
         body: JSON.stringify(formData)
       });
 
+      console.log('📥 Response status:', response.status, response.statusText);
+      
+      // Check if response is OK before parsing JSON
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
+        let errorData;
+        try {
+          errorData = JSON.parse(errorText);
+        } catch {
+          errorData = { message: `Server error: ${response.status} ${response.statusText}` };
+        }
+        alert(errorData.message || 'Error saving product');
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
+      console.log('✅ Response data:', data);
+      
       if (data.success) {
         alert(editingProduct ? 'Product updated!' : 'Product added!');
         setShowAddForm(false);
@@ -157,7 +178,8 @@ const ProductsManagement = () => {
         alert(data.message || 'Error saving product');
       }
     } catch (error) {
-      alert('Error saving product');
+      console.error('❌ Network/Parse error:', error);
+      alert('Error saving product: ' + error.message);
     } finally {
       setLoading(false);
     }
