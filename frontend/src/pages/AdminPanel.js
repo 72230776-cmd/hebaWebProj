@@ -474,6 +474,7 @@ const OrdersManagement = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewingOrder, setViewingOrder] = useState(null);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
 
   // API URL - use production backend when deployed, localhost for development
   const API_BASE_URL = process.env.REACT_APP_API_URL || 
@@ -512,9 +513,59 @@ const OrdersManagement = () => {
     }
   };
 
+  const handleStatusChange = async (orderId, newStatus) => {
+    if (!window.confirm(`Change order status to "${newStatus}"?`)) {
+      return;
+    }
+
+    setUpdatingStatus(true);
+    try {
+      const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ status: newStatus })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        alert(`Order status updated to "${newStatus}"`);
+        fetchOrders(); // Refresh orders
+        if (viewingOrder && viewingOrder.id === orderId) {
+          setViewingOrder(data.data.order);
+        }
+      } else {
+        alert(data.message || 'Failed to update order status');
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      alert('Error updating order status');
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  const getStatusBadgeClass = (status) => {
+    const statusMap = {
+      'pending': 'status-pending',
+      'processing': 'status-processing',
+      'shipped': 'status-shipped',
+      'delivering': 'status-delivering',
+      'delivered': 'status-delivered',
+      'cancelled': 'status-cancelled'
+    };
+    return statusMap[status] || 'status-pending';
+  };
+
   if (loading) {
     return <div className="loading">Loading orders...</div>;
   }
+
+  const calculateTotal = (order) => {
+    const subtotal = parseFloat(order.total_amount || 0);
+    const shipping = parseFloat(order.shipping_cost || 5.00);
+    return subtotal + shipping;
+  };
 
   return (
     <div className="management-section">
@@ -523,18 +574,36 @@ const OrdersManagement = () => {
         <p>No orders yet.</p>
       ) : (
         <div className="orders-list">
-          {orders.map((order) => (
-            <div key={order.id} className="order-card">
-              <div className="order-header">
-                <h3>Order #{order.id}</h3>
-                <span className={`status-badge ${order.status}`}>{order.status}</span>
+          {orders.map((order) => {
+            const orderTotal = calculateTotal(order);
+            return (
+              <div key={order.id} className="order-card">
+                <div className="order-header">
+                  <h3>Order #{order.id}</h3>
+                  <span className={`status-badge ${getStatusBadgeClass(order.status)}`}>
+                    {order.status.toUpperCase()}
+                  </span>
+                </div>
+                <p><strong>User:</strong> {order.username} ({order.email})</p>
+                <p><strong>Subtotal:</strong> ${parseFloat(order.total_amount || 0).toFixed(2)}</p>
+                <p><strong>Shipping:</strong> ${parseFloat(order.shipping_cost || 5.00).toFixed(2)}</p>
+                <p><strong>Total:</strong> ${orderTotal.toFixed(2)}</p>
+                <p><strong>Date:</strong> {new Date(order.created_at).toLocaleDateString()}</p>
+                <div className="order-actions">
+                  <button onClick={() => setViewingOrder(order)}>View Details</button>
+                  {order.status === 'delivering' && (
+                    <button 
+                      className="btn-deliver"
+                      onClick={() => handleStatusChange(order.id, 'delivered')}
+                      disabled={updatingStatus}
+                    >
+                      Mark as Delivered
+                    </button>
+                  )}
+                </div>
               </div>
-              <p><strong>User:</strong> {order.username} ({order.email})</p>
-              <p><strong>Total:</strong> ${order.total_amount}</p>
-              <p><strong>Date:</strong> {new Date(order.created_at).toLocaleDateString()}</p>
-              <button onClick={() => setViewingOrder(order)}>View Details</button>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -543,22 +612,63 @@ const OrdersManagement = () => {
           <div className="modal-content">
             <span className="close" onClick={() => setViewingOrder(null)}>&times;</span>
             <h2>Order #{viewingOrder.id} Details</h2>
-            <p><strong>User:</strong> {viewingOrder.username} ({viewingOrder.email})</p>
-            <p><strong>Status:</strong> {viewingOrder.status}</p>
-            <p><strong>Total:</strong> ${viewingOrder.total_amount}</p>
-            <p><strong>Date:</strong> {new Date(viewingOrder.created_at).toLocaleString()}</p>
-            {viewingOrder.items && viewingOrder.items.length > 0 && (
-              <div>
-                <h3>Items:</h3>
-                <ul>
-                  {viewingOrder.items.map((item, idx) => (
-                    <li key={idx}>
-                      {item.product_name} - Qty: {item.quantity} - ${item.price}
-                    </li>
-                  ))}
-                </ul>
+            <div className="order-details-modal">
+              <p><strong>User:</strong> {viewingOrder.username} ({viewingOrder.email})</p>
+              <p><strong>Status:</strong> 
+                <span className={`status-badge ${getStatusBadgeClass(viewingOrder.status)}`} style={{marginLeft: '10px'}}>
+                  {viewingOrder.status.toUpperCase()}
+                </span>
+              </p>
+              <p><strong>Shipping Address:</strong> {viewingOrder.shipping_address || 'Not provided'}</p>
+              <p><strong>Subtotal:</strong> ${parseFloat(viewingOrder.total_amount || 0).toFixed(2)}</p>
+              <p><strong>Shipping Cost:</strong> ${parseFloat(viewingOrder.shipping_cost || 5.00).toFixed(2)}</p>
+              <p><strong>Total:</strong> ${calculateTotal(viewingOrder).toFixed(2)}</p>
+              <p><strong>Payment Method:</strong> Cash on Delivery</p>
+              <p><strong>Date:</strong> {new Date(viewingOrder.created_at).toLocaleString()}</p>
+              
+              {viewingOrder.items && viewingOrder.items.length > 0 && (
+                <div className="order-items-modal">
+                  <h3>Items:</h3>
+                  <table className="items-table">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {viewingOrder.items.map((item, idx) => (
+                        <tr key={idx}>
+                          <td>{item.product_name}</td>
+                          <td>{item.quantity}</td>
+                          <td>${parseFloat(item.price).toFixed(2)}</td>
+                          <td>${(item.quantity * parseFloat(item.price)).toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+
+              <div className="status-change-section">
+                <h3>Change Status</h3>
+                <select
+                  value={viewingOrder.status}
+                  onChange={(e) => handleStatusChange(viewingOrder.id, e.target.value)}
+                  disabled={updatingStatus}
+                  className="status-select"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="processing">Processing</option>
+                  <option value="shipped">Shipped</option>
+                  <option value="delivering">Delivering</option>
+                  <option value="delivered">Delivered</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}

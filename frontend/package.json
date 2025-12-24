@@ -2,6 +2,7 @@
   "name": "africawebsite",
   "version": "1.0.0",
   "private": true,
+  "homepage": "/hebaWebProj",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -13,10 +14,9 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && node -e \"require('fs').copyFileSync('public/404.html', 'build/404.html')\"",
     "deploy": "gh-pages -d build"
   },
-  "homepage": "https://72230776-cmd.github.io/hebaWebProj",
   "browserslist": {
     "production": [
       ">0.2%",

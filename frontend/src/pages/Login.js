@@ -58,16 +58,16 @@ const Login = () => {
 
     if (result.success) {
       // Check if user is admin - redirect to admin panel
-      const loggedInUser = result.data?.user || result.user;
-      if (loggedInUser?.role === 'admin') {
-        // Small delay to ensure cookie is set before redirect
-        setTimeout(() => {
+      // We need to get user from auth context after login
+      setTimeout(() => {
+        const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
+        if (currentUser.role === 'admin') {
           navigate('/admin', { replace: true });
-        }, 200);
-      } else {
-        // Regular users go to the page they came from, or home
-        navigate(redirectTo, { replace: true });
-      }
+        } else {
+          // Regular users go to the page they came from, or home
+          navigate(redirectTo, { replace: true });
+        }
+      }, 100);
     } else {
       setError(result.message);
     }

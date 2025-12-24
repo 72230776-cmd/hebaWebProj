@@ -7,6 +7,8 @@ import Contact from "./pages/Contact";
 import Booking from "./pages/Booking";
 import Login from "./pages/Login";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import OrderSuccess from "./pages/OrderSuccess";
 import AdminPanel from "./pages/AdminPanel";
 import AdminRoute from "./components/AdminRoute";
 import { Routes, Route } from "react-router-dom";
@@ -27,6 +29,8 @@ function App() {
           <Route path="/contact" element={<AdminRoute><Contact /></AdminRoute>} />
           <Route path="/booking" element={<AdminRoute><Booking /></AdminRoute>} />
           <Route path="/cart" element={<AdminRoute><Cart /></AdminRoute>} />
+          <Route path="/checkout" element={<AdminRoute><Checkout /></AdminRoute>} />
+          <Route path="/order-success" element={<AdminRoute><OrderSuccess /></AdminRoute>} />
         </Routes>
       </CartProvider>
     </AuthProvider>

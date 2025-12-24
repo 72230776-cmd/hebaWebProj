@@ -354,6 +354,11 @@
   color: white;
 }
 
+.status-badge.delivering {
+  background: #ffc107;
+  color: #333;
+}
+
 .status-badge.delivered {
   background: #4CAF50;
   color: white;
@@ -364,13 +369,50 @@
   color: white;
 }
 
+/* Status badge class names (for dynamic classes) */
+.status-pending {
+  background: #ff9800;
+  color: white;
+}
+
+.status-processing {
+  background: #2196F3;
+  color: white;
+}
+
+.status-shipped {
+  background: #9C27B0;
+  color: white;
+}
+
+.status-delivering {
+  background: #ffc107;
+  color: #333;
+}
+
+.status-delivered {
+  background: #4CAF50;
+  color: white;
+}
+
+.status-cancelled {
+  background: #f44336;
+  color: white;
+}
+
 .order-card p {
   margin: 8px 0;
   color: #444;
 }
 
-.order-card button {
+.order-actions {
+  display: flex;
+  gap: 10px;
   margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.order-card button {
   padding: 8px 16px;
   background: #f4a226;
   color: black;
@@ -378,10 +420,25 @@
   border-radius: 6px;
   font-weight: bold;
   cursor: pointer;
+  transition: all 0.3s;
 }
 
 .order-card button:hover {
   background: #ffb84d;
+}
+
+.order-card .btn-deliver {
+  background: #2a9d8f;
+  color: white;
+}
+
+.order-card .btn-deliver:hover {
+  background: #238f82;
+}
+
+.order-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* MODAL */
@@ -471,5 +528,74 @@
   padding: 40px;
   color: #c66a00;
   font-size: 18px;
+}
+
+/* Order Details Modal */
+.order-details-modal {
+  margin-top: 20px;
+}
+
+.order-details-modal p {
+  margin: 12px 0;
+  line-height: 1.6;
+}
+
+.order-items-modal {
+  margin: 20px 0;
+}
+
+.order-items-modal h3 {
+  color: #c66a00;
+  margin-bottom: 15px;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.items-table th,
+.items-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.items-table th {
+  background: #fff7eb;
+  color: #c66a00;
+  font-weight: bold;
+}
+
+.items-table tr:hover {
+  background: #f9f9f9;
+}
+
+.status-change-section {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 2px solid #f4a226;
+}
+
+.status-change-section h3 {
+  color: #c66a00;
+  margin-bottom: 10px;
+}
+
+.status-select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #f4a226;
+  border-radius: 8px;
+  font-size: 16px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+}
+
+.status-select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 

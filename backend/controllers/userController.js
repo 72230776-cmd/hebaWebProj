@@ -1,6 +1,6 @@
 const User = require('../models/User');
 
-// Get all users (only regular users, not admins)
+// Get all users
 exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll();

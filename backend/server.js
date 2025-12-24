@@ -51,7 +51,8 @@ db.getConnection((err, connection) => {
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use('/api/user', require('./routes/userRoutes')); // User routes (authenticated)
+app.use('/api/admin', require('./routes/adminRoutes')); // Admin routes (authenticated + admin)
 
 // Public product route (for users to view products)
 app.get('/api/products', require('./controllers/productController').getAllProducts);

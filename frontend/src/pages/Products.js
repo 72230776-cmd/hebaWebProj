@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import { useCart } from "../contexts/CartContext";
-import { API_URL } from '../config/api';
 import "../styles/products.css";
 
 const Products = () => {
@@ -17,7 +16,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(API_URL.PRODUCTS);
+      const response = await fetch("http://localhost:5000/api/products");
       const data = await response.json();
       if (data.success) {
         setProducts(data.data.products);

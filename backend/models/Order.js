@@ -47,19 +47,29 @@ class Order {
 
   // Create a new order
   static async create(orderData) {
-    const { user_id, total_amount, shipping_address, items } = orderData;
+    const { user_id, total_amount, shipping_address, shipping_cost, address_id, status, items } = orderData;
     
     // Start transaction
     const connection = await db.promisePool.getConnection();
     await connection.beginTransaction();
 
     try {
-      // Create order
-      let orderQuery = 'INSERT INTO orders (user_id, total_amount, shipping_address) VALUES (?, ?, ?)';
+      // Create order with shipping cost and address_id
+      const finalShippingCost = shipping_cost || 5.00; // Default shipping cost
+      const orderStatus = status || 'delivering'; // Default status is 'delivering'
+      
+      let orderQuery = 'INSERT INTO orders (user_id, total_amount, shipping_address, shipping_cost, address_id, status) VALUES (?, ?, ?, ?, ?, ?)';
       if (db.dbType === 'postgres') {
         orderQuery += ' RETURNING id';
       }
-      const [orderRows, orderResult] = await connection.execute(orderQuery, [user_id, total_amount, shipping_address]);
+      const [orderRows, orderResult] = await connection.execute(orderQuery, [
+        user_id, 
+        total_amount, 
+        shipping_address, 
+        finalShippingCost,
+        address_id || null,
+        orderStatus
+      ]);
       const orderId = db.dbType === 'postgres' ? (orderRows[0] && orderRows[0].id) : getInsertId(orderResult, db.dbType);
 
       // Create order items
@@ -80,9 +90,22 @@ class Order {
 
   // Update order status
   static async updateStatus(id, status) {
-    const query = 'UPDATE orders SET status = ? WHERE id = ?';
+    const query = 'UPDATE orders SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
     await db.promisePool.execute(query, [status, id]);
     return await this.findById(id);
+  }
+
+  // Get order with address details
+  static async findByIdWithAddress(id) {
+    const query = `
+      SELECT o.*, u.username, u.email, a.full_name, a.street_address, a.city, a.state, a.zip_code, a.country, a.phone
+      FROM orders o 
+      JOIN users u ON o.user_id = u.id 
+      LEFT JOIN addresses a ON o.address_id = a.id
+      WHERE o.id = ?
+    `;
+    const [rows] = await db.promisePool.execute(query, [id]);
+    return rows[0] || null;
   }
 }
 
