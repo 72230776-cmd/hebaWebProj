@@ -53,6 +53,8 @@ db.getConnection((err, connection) => {
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/user', require('./routes/userRoutes')); // User routes (authenticated)
 app.use('/api/admin', require('./routes/adminRoutes')); // Admin routes (authenticated + admin)
+app.use('/api/contact', require('./routes/contactRoutes')); // Public contact routes
+app.use('/api/booking', require('./routes/bookingRoutes')); // Public booking routes
 
 // Public product route (for users to view products)
 app.get('/api/products', require('./controllers/productController').getAllProducts);

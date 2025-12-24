@@ -7,6 +7,13 @@ const Contact = () => {
     email: "",
     message: "",
   });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  // API URL
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/contact`;
 
   const handleChange = (e) => {
     setFormData({
@@ -15,11 +22,36 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle form submission here
-    alert("Thank you for your message! We'll get back to you soon.");
-    setFormData({ name: "", email: "", message: "" });
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", message: "" });
+        setTimeout(() => {
+          setSubmitted(false);
+        }, 5000);
+      } else {
+        alert(data.message || 'Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      console.error('Contact submission error:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -102,9 +134,15 @@ const Contact = () => {
               ></textarea>
             </div>
 
-            <button className="contact-btn" type="submit">
-              Send Message
+            <button className="contact-btn" type="submit" disabled={loading}>
+              {loading ? 'Sending...' : 'Send Message'}
             </button>
+          </form>
+          {submitted && (
+            <div className="success-message" style={{ marginTop: '20px', padding: '15px', background: '#d4edda', color: '#155724', borderRadius: '5px' }}>
+              ✓ Thank you for your message! We'll get back to you soon.
+            </div>
+          )}
           </form>
         </div>
       </div>

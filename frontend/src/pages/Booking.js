@@ -13,6 +13,12 @@ const Booking = () => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // API URL
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/booking`;
 
   const handleChange = (e) => {
     setFormData({
@@ -21,22 +27,44 @@ const Booking = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
-    // Reset form after 5 seconds
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: "",
-        phone: "",
-        email: "",
-        orderType: "",
-        date: "",
-        time: "",
-        description: "",
+    setLoading(true);
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
       });
-    }, 5000);
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSubmitted(true);
+        setTimeout(() => {
+          setSubmitted(false);
+          setFormData({
+            name: "",
+            phone: "",
+            email: "",
+            orderType: "",
+            date: "",
+            time: "",
+            description: "",
+          });
+        }, 5000);
+      } else {
+        alert(data.message || 'Failed to submit booking. Please try again.');
+      }
+    } catch (error) {
+      console.error('Booking submission error:', error);
+      alert('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -170,8 +198,8 @@ const Booking = () => {
               ></textarea>
             </div>
 
-            <button type="submit" className="booking-btn">
-              Book Appointment
+            <button type="submit" className="booking-btn" disabled={loading}>
+              {loading ? 'Submitting...' : 'Book Appointment'}
             </button>
           </form>
         </div>

@@ -45,12 +45,26 @@ const AdminPanel = () => {
         >
           📋 View Orders
         </button>
+        <button
+          className={activeTab === 'contacts' ? 'active' : ''}
+          onClick={() => setActiveTab('contacts')}
+        >
+          📧 View Contacts
+        </button>
+        <button
+          className={activeTab === 'bookings' ? 'active' : ''}
+          onClick={() => setActiveTab('bookings')}
+        >
+          📅 View Bookings
+        </button>
       </div>
 
       <div className="admin-content">
         {activeTab === 'products' && <ProductsManagement />}
         {activeTab === 'users' && <UsersManagement />}
         {activeTab === 'orders' && <OrdersManagement />}
+        {activeTab === 'contacts' && <ContactsManagement />}
+        {activeTab === 'bookings' && <BookingsManagement />}
       </div>
     </div>
   );
@@ -671,6 +685,256 @@ const OrdersManagement = () => {
                   <option value="cancelled">Cancelled</option>
                 </select>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Contacts Management Component
+const ContactsManagement = () => {
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [viewingContact, setViewingContact] = useState(null);
+
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/admin`;
+
+  const getAuthHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const fallbackToken = sessionStorage.getItem('auth_token');
+    if (fallbackToken) {
+      headers['Authorization'] = `Bearer ${fallbackToken}`;
+    }
+    return headers;
+  };
+
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const fetchContacts = async () => {
+    try {
+      const response = await fetch(`${API_URL}/contacts`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: getAuthHeaders()
+      });
+      const data = await response.json();
+      if (data.success) {
+        setContacts(data.data.contacts);
+      }
+    } catch (error) {
+      console.error('Error fetching contacts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this contact submission?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}/contacts/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: getAuthHeaders()
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchContacts();
+      }
+    } catch (error) {
+      alert('Error deleting contact');
+    }
+  };
+
+  if (loading) {
+    return <div className="loading">Loading contacts...</div>;
+  }
+
+  return (
+    <div className="management-section">
+      <h2>Contact Submissions</h2>
+      {contacts.length === 0 ? (
+        <p>No contact submissions yet.</p>
+      ) : (
+        <div className="contacts-table">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {contacts.map((contact) => (
+                <tr key={contact.id}>
+                  <td>{contact.id}</td>
+                  <td>{contact.name}</td>
+                  <td>{contact.email}</td>
+                  <td>{new Date(contact.created_at).toLocaleDateString()}</td>
+                  <td>
+                    <button onClick={() => setViewingContact(contact)}>View Details</button>
+                    <button onClick={() => handleDelete(contact.id)} className="delete-btn">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {viewingContact && (
+        <div className="view-modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setViewingContact(null)}>&times;</span>
+            <h2>Contact Details</h2>
+            <div className="contact-details">
+              <p><strong>ID:</strong> {viewingContact.id}</p>
+              <p><strong>Name:</strong> {viewingContact.name}</p>
+              <p><strong>Email:</strong> {viewingContact.email}</p>
+              <p><strong>Date:</strong> {new Date(viewingContact.created_at).toLocaleString()}</p>
+              <p><strong>Message:</strong></p>
+              <div className="message-box">{viewingContact.message}</div>
+            </div>
+            <div className="modal-actions">
+              <button onClick={() => setViewingContact(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Bookings Management Component
+const BookingsManagement = () => {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [viewingBooking, setViewingBooking] = useState(null);
+
+  const API_BASE_URL = process.env.REACT_APP_API_URL || 
+    (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+  const API_URL = `${API_BASE_URL}/api/admin`;
+
+  const getAuthHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const fallbackToken = sessionStorage.getItem('auth_token');
+    if (fallbackToken) {
+      headers['Authorization'] = `Bearer ${fallbackToken}`;
+    }
+    return headers;
+  };
+
+  useEffect(() => {
+    fetchBookings();
+  }, []);
+
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch(`${API_URL}/bookings`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: getAuthHeaders()
+      });
+      const data = await response.json();
+      if (data.success) {
+        setBookings(data.data.bookings);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this booking?')) return;
+
+    try {
+      const response = await fetch(`${API_URL}/bookings/${id}`, {
+        method: 'DELETE',
+        credentials: 'include',
+        headers: getAuthHeaders()
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchBookings();
+      }
+    } catch (error) {
+      alert('Error deleting booking');
+    }
+  };
+
+  if (loading) {
+    return <div className="loading">Loading bookings...</div>;
+  }
+
+  return (
+    <div className="management-section">
+      <h2>Booking Appointments</h2>
+      {bookings.length === 0 ? (
+        <p>No booking appointments yet.</p>
+      ) : (
+        <div className="bookings-table">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Order Type</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.map((booking) => (
+                <tr key={booking.id}>
+                  <td>{booking.id}</td>
+                  <td>{booking.name}</td>
+                  <td>{booking.phone}</td>
+                  <td>{booking.order_type}</td>
+                  <td>{new Date(booking.appointment_date).toLocaleDateString()}</td>
+                  <td>{booking.appointment_time}</td>
+                  <td>
+                    <button onClick={() => setViewingBooking(booking)}>View Details</button>
+                    <button onClick={() => handleDelete(booking.id)} className="delete-btn">Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {viewingBooking && (
+        <div className="view-modal">
+          <div className="modal-content">
+            <span className="close" onClick={() => setViewingBooking(null)}>&times;</span>
+            <h2>Booking Details</h2>
+            <div className="booking-details">
+              <p><strong>ID:</strong> {viewingBooking.id}</p>
+              <p><strong>Name:</strong> {viewingBooking.name}</p>
+              <p><strong>Phone:</strong> {viewingBooking.phone}</p>
+              <p><strong>Email:</strong> {viewingBooking.email || 'N/A'}</p>
+              <p><strong>Order Type:</strong> {viewingBooking.order_type}</p>
+              <p><strong>Appointment Date:</strong> {new Date(viewingBooking.appointment_date).toLocaleDateString()}</p>
+              <p><strong>Appointment Time:</strong> {viewingBooking.appointment_time}</p>
+              <p><strong>Description:</strong></p>
+              <div className="message-box">{viewingBooking.description || 'No description provided'}</div>
+              <p><strong>Submitted:</strong> {new Date(viewingBooking.created_at).toLocaleString()}</p>
+            </div>
+            <div className="modal-actions">
+              <button onClick={() => setViewingBooking(null)}>Close</button>
             </div>
           </div>
         </div>

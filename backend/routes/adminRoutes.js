@@ -4,6 +4,8 @@ const { authenticate, isAdmin } = require('../middleware/authMiddleware');
 const productController = require('../controllers/productController');
 const userController = require('../controllers/userController');
 const orderController = require('../controllers/orderController');
+const contactController = require('../controllers/contactController');
+const bookingController = require('../controllers/bookingController');
 
 // All admin routes require authentication and admin role
 router.use(authenticate);
@@ -26,6 +28,14 @@ router.put('/users/:id/toggle-active', userController.toggleUserActive);
 router.get('/orders', orderController.getAllOrders);
 router.get('/orders/:id', orderController.getOrderById);
 router.put('/orders/:id/status', orderController.updateOrderStatus);
+
+// Contact routes
+router.get('/contacts', contactController.getAllContacts);
+router.delete('/contacts/:id', contactController.deleteContact);
+
+// Booking routes
+router.get('/bookings', bookingController.getAllBookings);
+router.delete('/bookings/:id', bookingController.deleteBooking);
 
 module.exports = router;
 
