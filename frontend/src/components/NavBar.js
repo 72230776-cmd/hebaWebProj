@@ -42,7 +42,7 @@ const NavBar = () => {
         <Link to="/about">About</Link>
         <Link to="/contact">Contact</Link>
         <Link to="/booking">Booking</Link>
-        {isAuthenticated() && (
+        {user && (
           <Link to="/cart" className="cart-link" title="Shopping Cart">
             <svg 
               className="cart-icon" 
