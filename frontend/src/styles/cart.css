@@ -45,6 +45,9 @@
   font-weight: bold;
   font-size: 18px;
   transition: background-color 0.3s, transform 0.2s;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .shop-link:hover {
