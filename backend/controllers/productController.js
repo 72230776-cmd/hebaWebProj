@@ -47,19 +47,39 @@ exports.createProduct = async (req, res) => {
   try {
     const { name, price, description, image } = req.body;
 
-    if (!name || !price) {
+    console.log('📥 Create product request:', { name, price, description, image });
+
+    // Validate required fields
+    if (!name || name.trim() === '') {
       return res.status(400).json({
         success: false,
-        message: 'Please provide name and price'
+        message: 'Product name is required'
+      });
+    }
+
+    if (!price || price === '' || isNaN(parseFloat(price))) {
+      return res.status(400).json({
+        success: false,
+        message: 'Valid price is required'
+      });
+    }
+
+    const parsedPrice = parseFloat(price);
+    if (parsedPrice <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Price must be greater than 0'
       });
     }
 
     const product = await Product.create({
-      name,
-      price: parseFloat(price),
-      description: description || '',
-      image: image || ''
+      name: name.trim(),
+      price: parsedPrice,
+      description: (description || '').trim(),
+      image: (image || '').trim()
     });
+
+    console.log('✅ Product created:', product);
 
     res.status(201).json({
       success: true,
@@ -67,11 +87,17 @@ exports.createProduct = async (req, res) => {
       data: { product }
     });
   } catch (error) {
-    console.error('Create product error:', error);
+    console.error('❌ Create product error:', error);
+    console.error('   Error details:', {
+      message: error.message,
+      code: error.code,
+      detail: error.detail,
+      constraint: error.constraint
+    });
     res.status(500).json({
       success: false,
       message: 'Error creating product',
-      error: process.env.NODE_ENV === 'development' ? error.message : {}
+      error: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
     });
   }
 };
