@@ -2,10 +2,14 @@ const nodemailer = require('nodemailer');
 require('dotenv').config();
 
 // Create reusable transporter with timeout settings
+// Try port 465 (SSL) first, fallback to 587 (TLS)
+const smtpPort = parseInt(process.env.SMTP_PORT) || 465;
+const useSSL = smtpPort === 465;
+
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT) || 587,
-  secure: false, // true for 465, false for other ports
+  port: smtpPort,
+  secure: useSSL, // true for 465, false for other ports
   auth: {
     user: process.env.SMTP_USER || '72230776@students.liu.edu.lb',
     pass: process.env.SMTP_PASSWORD || ''
