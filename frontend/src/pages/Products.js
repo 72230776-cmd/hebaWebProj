@@ -27,17 +27,29 @@ const Products = () => {
         setProducts(data.data.products);
       } else {
         // Fallback to static JSON if API fails
-        fetch("/products.json")
-          .then((res) => res.json())
-          .then((data) => setProducts(data));
+        loadFallbackProducts();
       }
     } catch (error) {
       console.error('Error fetching products:', error);
       // Fallback to static JSON if API fails
-      fetch("/products.json")
-        .then((res) => res.json())
-        .then((data) => setProducts(data));
+      loadFallbackProducts();
     }
+  };
+
+  const loadFallbackProducts = () => {
+    // Use the homepage path for GitHub Pages
+    const basePath = window.location.hostname === 'localhost' ? '' : '/hebaWebProj';
+    fetch(`${basePath}/products.json`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load products.json');
+        return res.json();
+      })
+      .then((data) => setProducts(data))
+      .catch((err) => {
+        console.error('Fallback fetch error:', err);
+        // Set empty array if all fails
+        setProducts([]);
+      });
   };
 
   const handleAddToCart = (product) => {
