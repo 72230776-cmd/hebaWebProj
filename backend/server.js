@@ -50,19 +50,12 @@ db.getConnection(async (err, connection) => {
     // Automatically create contacts and bookings tables if they don't exist
     try {
       const setupController = require('./controllers/setupController');
-      // Create a mock request/response to call the function
-      const mockReq = {};
-      const mockRes = {
-        json: (data) => {
-          if (data.success) {
-            console.log('✅ ' + data.message);
-          } else {
-            console.log('⚠️ ' + data.message);
-          }
-        },
-        status: () => mockRes
-      };
-      await setupController.createTables(mockReq, mockRes);
+      const result = await setupController.createTablesInternal();
+      if (result.success) {
+        console.log('✅ ' + result.message);
+      } else {
+        console.log('⚠️ ' + result.message);
+      }
     } catch (error) {
       console.error('⚠️ Error creating tables on startup (non-critical):', error.message);
     }

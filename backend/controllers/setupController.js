@@ -1,7 +1,7 @@
 const db = require('../config/database');
 
-// Create contacts and bookings tables if they don't exist
-exports.createTables = async (req, res) => {
+// Internal function to create tables (can be called directly)
+async function createTablesInternal() {
   try {
     console.log('Creating contacts and bookings tables...');
 
@@ -39,16 +39,26 @@ exports.createTables = async (req, res) => {
       await db.promisePool.execute(createBookingsTable);
     }
 
-    res.json({
-      success: true,
-      message: 'Contacts and bookings tables created successfully!'
-    });
+    return { success: true, message: 'Contacts and bookings tables created successfully!' };
   } catch (error) {
     console.error('Error creating tables:', error);
+    return { success: false, message: 'Error creating tables', error: error.message };
+  }
+}
+
+// Export for use in server.js
+exports.createTablesInternal = createTablesInternal;
+
+// HTTP endpoint handler
+exports.createTables = async (req, res) => {
+  const result = await createTablesInternal();
+  if (result.success) {
+    res.json(result);
+  } else {
     res.status(500).json({
       success: false,
-      message: 'Error creating tables',
-      error: process.env.NODE_ENV === 'development' ? error.message : {}
+      message: result.message,
+      error: process.env.NODE_ENV === 'development' ? result.error : {}
     });
   }
 };
