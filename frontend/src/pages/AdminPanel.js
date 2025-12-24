@@ -59,7 +59,6 @@ const AdminPanel = () => {
 // Products Management Component
 const ProductsManagement = () => {
   const [products, setProducts] = useState([]);
-  const [staticProducts, setStaticProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -73,7 +72,6 @@ const ProductsManagement = () => {
 
   useEffect(() => {
     fetchProducts();
-    fetchStaticProducts();
   }, []);
 
   const fetchProducts = async () => {
@@ -280,31 +278,10 @@ const ProductsManagement = () => {
         </div>
       )}
 
-      {/* Debug info - remove in production */}
-      {process.env.NODE_ENV === 'development' && (
-        <div style={{padding: '10px', background: '#f0f0f0', marginBottom: '10px', fontSize: '12px'}}>
-          Debug: DB Products: {products.length}, Static Products: {staticProducts.length}, Loading: {loading ? 'Yes' : 'No'}
-        </div>
-      )}
-
-      {staticProducts.length === 0 && products.length === 0 && !loading ? (
+      {products.length === 0 && !loading ? (
         <p>No products found. Add your first product above!</p>
       ) : (
         <div className="items-grid">
-        {/* Static Products */}
-        {staticProducts.map((product) => (
-          <div key={product.id} className="item-card static-product">
-            <div className="static-badge">Static</div>
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p>${product.price}</p>
-            <div className="item-actions">
-              <button onClick={() => handleView(product)}>View</button>
-            </div>
-          </div>
-        ))}
-
-        {/* Database Products */}
         {products.map((product) => (
           <div key={product.id} className="item-card">
             <img src={product.image} alt={product.name} />

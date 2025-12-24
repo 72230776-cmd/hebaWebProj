@@ -10,15 +10,41 @@ const Products = () => {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
+  const loadFallbackProducts = () => {
+    // Use the homepage path for GitHub Pages
+    const basePath = window.location.hostname === 'localhost' ? '' : '/hebaWebProj';
+    fetch(`${basePath}/products.json`)
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to load products.json');
+        return res.json();
+      })
+      .then((data) => setProducts(data))
+      .catch((err) => {
+        console.error('Fallback fetch error:', err);
+        // Set empty array if all fails
+        setProducts([]);
+      });
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const fetchProducts = async () => {
     // API URL - use production backend when deployed, localhost for development
+    // Check multiple conditions to ensure we use the right backend
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1' ||
+                       window.location.hostname === '';
+    
     const API_BASE_URL = process.env.REACT_APP_API_URL || 
-      (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+      (isLocalhost ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
     const API_URL = `${API_BASE_URL}/api/products`;
+
+    console.log('🔗 Fetching products from:', API_URL);
+    console.log('📍 Current hostname:', window.location.hostname);
+    console.log('📍 Is localhost?', isLocalhost);
+    console.log('📍 Full URL:', window.location.href);
 
     try {
       const response = await fetch(API_URL);
@@ -34,22 +60,6 @@ const Products = () => {
       // Fallback to static JSON if API fails
       loadFallbackProducts();
     }
-  };
-
-  const loadFallbackProducts = () => {
-    // Use the homepage path for GitHub Pages
-    const basePath = window.location.hostname === 'localhost' ? '' : '/hebaWebProj';
-    fetch(`${basePath}/products.json`)
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to load products.json');
-        return res.json();
-      })
-      .then((data) => setProducts(data))
-      .catch((err) => {
-        console.error('Fallback fetch error:', err);
-        // Set empty array if all fails
-        setProducts([]);
-      });
   };
 
   const handleAddToCart = (product) => {

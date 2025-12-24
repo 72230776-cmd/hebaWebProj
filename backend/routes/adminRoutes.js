@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const { authenticate, isAdmin } = require('../middleware/authMiddleware');
 const productController = require('../controllers/productController');
-const staticProductController = require('../controllers/staticProductController');
 const userController = require('../controllers/userController');
 const orderController = require('../controllers/orderController');
 
@@ -12,7 +11,6 @@ router.use(isAdmin);
 
 // Product routes
 router.get('/products', productController.getAllProducts);
-router.get('/products/static', staticProductController.getStaticProducts);
 router.get('/products/:id', productController.getProductById);
 router.post('/products', productController.createProduct);
 router.put('/products/:id', productController.updateProduct);
