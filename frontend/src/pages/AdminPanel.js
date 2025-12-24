@@ -70,6 +70,16 @@ const ProductsManagement = () => {
     (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
   const API_URL = `${API_BASE_URL}/api/admin`;
 
+  // Helper function to get headers with fallback token
+  const getAuthHeaders = () => {
+    const headers = { 'Content-Type': 'application/json' };
+    const fallbackToken = sessionStorage.getItem('auth_token');
+    if (fallbackToken) {
+      headers['Authorization'] = `Bearer ${fallbackToken}`;
+    }
+    return headers;
+  };
+
   useEffect(() => {
     fetchProducts();
   }, []);
