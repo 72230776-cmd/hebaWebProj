@@ -32,15 +32,50 @@ const Booking = () => {
     setLoading(true);
 
     try {
+      console.log('Submitting booking to:', API_URL);
+      console.log('Form data:', formData);
+      
       const response = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          name: formData.name,
+          phone: formData.phone,
+          email: formData.email || null,
+          orderType: formData.orderType,
+          date: formData.date,
+          time: formData.time,
+          description: formData.description || null
+        }),
       });
 
-      const data = await response.json();
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
+      // Check if response is ok before parsing
+      if (!response.ok) {
+        let errorMessage = `Server error: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch {
+          const errorText = await response.text();
+          errorMessage = errorText || errorMessage;
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Parse JSON response
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.error('Failed to parse JSON response:', parseError);
+        throw new Error('Invalid response from server');
+      }
+      console.log('Response data:', data);
 
       if (data.success) {
         setSubmitted(true);
@@ -61,7 +96,7 @@ const Booking = () => {
       }
     } catch (error) {
       console.error('Booking submission error:', error);
-      alert('Network error. Please try again.');
+      alert('Error submitting booking: ' + (error.message || 'Please try again.'));
     } finally {
       setLoading(false);
     }

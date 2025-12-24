@@ -3,10 +3,12 @@ const Booking = require('../models/Booking');
 // Create booking (public - no auth required)
 exports.createBooking = async (req, res) => {
   try {
+    console.log('📥 Booking request received:', req.body);
     const { name, phone, email, orderType, date, time, description } = req.body;
 
     // Validation
     if (!name || !phone || !orderType || !date || !time) {
+      console.log('❌ Validation failed - missing required fields');
       return res.status(400).json({
         success: false,
         message: 'Name, phone, order type, date, and time are required'
@@ -14,6 +16,16 @@ exports.createBooking = async (req, res) => {
     }
 
     // Create booking
+    console.log('💾 Creating booking with data:', {
+      name,
+      phone,
+      email: email || null,
+      order_type: orderType,
+      appointment_date: date,
+      appointment_time: time,
+      description: description || null
+    });
+
     const booking = await Booking.create({
       name,
       phone,
@@ -23,6 +35,8 @@ exports.createBooking = async (req, res) => {
       appointment_time: time,
       description: description || null
     });
+
+    console.log('✅ Booking created successfully:', booking);
 
     res.status(201).json({
       success: true,
