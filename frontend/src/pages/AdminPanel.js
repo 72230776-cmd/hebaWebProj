@@ -762,32 +762,21 @@ const ContactsManagement = () => {
       {contacts.length === 0 ? (
         <p>No contact submissions yet.</p>
       ) : (
-        <div className="contacts-table">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contacts.map((contact) => (
-                <tr key={contact.id}>
-                  <td>{contact.id}</td>
-                  <td>{contact.name}</td>
-                  <td>{contact.email}</td>
-                  <td>{new Date(contact.created_at).toLocaleDateString()}</td>
-                  <td>
-                    <button onClick={() => setViewingContact(contact)}>View Details</button>
-                    <button onClick={() => handleDelete(contact.id)} className="delete-btn">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="contacts-list">
+          {contacts.map((contact) => (
+            <div key={contact.id} className="contact-card">
+              <div className="contact-header">
+                <h3>Contact #{contact.id}</h3>
+              </div>
+              <p><strong>Name:</strong> {contact.name}</p>
+              <p><strong>Email:</strong> {contact.email}</p>
+              <p><strong>Date:</strong> {new Date(contact.created_at).toLocaleDateString()}</p>
+              <div className="contact-actions">
+                <button onClick={() => setViewingContact(contact)}>View Details</button>
+                <button onClick={() => handleDelete(contact.id)} className="delete-btn">Delete</button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 
@@ -883,36 +872,24 @@ const BookingsManagement = () => {
       {bookings.length === 0 ? (
         <p>No booking appointments yet.</p>
       ) : (
-        <div className="bookings-table">
-          <table>
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Order Type</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {bookings.map((booking) => (
-                <tr key={booking.id}>
-                  <td>{booking.id}</td>
-                  <td>{booking.name}</td>
-                  <td>{booking.phone}</td>
-                  <td>{booking.order_type}</td>
-                  <td>{new Date(booking.appointment_date).toLocaleDateString()}</td>
-                  <td>{booking.appointment_time}</td>
-                  <td>
-                    <button onClick={() => setViewingBooking(booking)}>View Details</button>
-                    <button onClick={() => handleDelete(booking.id)} className="delete-btn">Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="bookings-list">
+          {bookings.map((booking) => (
+            <div key={booking.id} className="booking-card">
+              <div className="booking-header">
+                <h3>Booking #{booking.id}</h3>
+              </div>
+              <p><strong>Name:</strong> {booking.name}</p>
+              <p><strong>Phone:</strong> {booking.phone}</p>
+              <p><strong>Email:</strong> {booking.email || 'N/A'}</p>
+              <p><strong>Order Type:</strong> {booking.order_type}</p>
+              <p><strong>Appointment Date:</strong> {new Date(booking.appointment_date).toLocaleDateString()}</p>
+              <p><strong>Appointment Time:</strong> {booking.appointment_time}</p>
+              <div className="booking-actions">
+                <button onClick={() => setViewingBooking(booking)}>View Details</button>
+                <button onClick={() => handleDelete(booking.id)} className="delete-btn">Delete</button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
 

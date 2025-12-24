@@ -599,107 +599,127 @@
   cursor: not-allowed;
 }
 
-/* CONTACTS TABLE */
-.contacts-table {
-  overflow-x: auto;
+/* CONTACTS LIST (Card-based like Orders) */
+.contacts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.contacts-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.contacts-table th,
-.contacts-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #f4a226;
-}
-
-.contacts-table th {
+.contact-card {
   background: #fff7eb;
-  color: #c66a00;
-  font-weight: bold;
+  border: 2px solid #f4a226;
+  border-radius: 12px;
+  padding: 20px;
 }
 
-.contacts-table td button {
-  padding: 6px 12px;
-  margin-right: 8px;
+.contact-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.contact-header h3 {
+  color: #b35400;
+  margin: 0;
+}
+
+.contact-card p {
+  margin: 8px 0;
+  color: #444;
+}
+
+.contact-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.contact-card button {
+  padding: 8px 16px;
+  background: #f4a226;
+  color: black;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-weight: bold;
-  font-size: 14px;
+  cursor: pointer;
   transition: all 0.3s;
 }
 
-.contacts-table td button:first-child {
-  background: #f4a226;
-  color: black;
-}
-
-.contacts-table td button:first-child:hover {
+.contact-card button:hover {
   background: #ffb84d;
 }
 
-.contacts-table td button.delete-btn {
+.contact-card button.delete-btn {
   background: #ff4444;
   color: white;
 }
 
-.contacts-table td button.delete-btn:hover {
+.contact-card button.delete-btn:hover {
   background: #cc0000;
 }
 
-/* BOOKINGS TABLE */
-.bookings-table {
-  overflow-x: auto;
+/* BOOKINGS LIST (Card-based like Orders) */
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-.bookings-table table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.bookings-table th,
-.bookings-table td {
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #f4a226;
-}
-
-.bookings-table th {
+.booking-card {
   background: #fff7eb;
-  color: #c66a00;
-  font-weight: bold;
+  border: 2px solid #f4a226;
+  border-radius: 12px;
+  padding: 20px;
 }
 
-.bookings-table td button {
-  padding: 6px 12px;
-  margin-right: 8px;
+.booking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.booking-header h3 {
+  color: #b35400;
+  margin: 0;
+}
+
+.booking-card p {
+  margin: 8px 0;
+  color: #444;
+}
+
+.booking-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+.booking-card button {
+  padding: 8px 16px;
+  background: #f4a226;
+  color: black;
   border: none;
   border-radius: 6px;
-  cursor: pointer;
   font-weight: bold;
-  font-size: 14px;
+  cursor: pointer;
   transition: all 0.3s;
 }
 
-.bookings-table td button:first-child {
-  background: #f4a226;
-  color: black;
-}
-
-.bookings-table td button:first-child:hover {
+.booking-card button:hover {
   background: #ffb84d;
 }
 
-.bookings-table td button.delete-btn {
+.booking-card button.delete-btn {
   background: #ff4444;
   color: white;
 }
 
-.bookings-table td button.delete-btn:hover {
+.booking-card button.delete-btn:hover {
   background: #cc0000;
 }
 
