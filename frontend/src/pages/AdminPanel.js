@@ -139,13 +139,34 @@ const ProductsManagement = () => {
         : `${API_URL}/products`;
       const method = editingProduct ? 'PUT' : 'POST';
 
-      console.log('📤 Submitting product:', { url, method, formData });
+      // Clean and validate form data
+      const cleanFormData = {
+        name: (formData.name || '').trim(),
+        price: formData.price ? parseFloat(formData.price) : 0,
+        description: (formData.description || '').trim(),
+        image: (formData.image || '').trim()
+      };
+
+      // Validate required fields
+      if (!cleanFormData.name) {
+        alert('Product name is required');
+        setLoading(false);
+        return;
+      }
+
+      if (!cleanFormData.price || cleanFormData.price <= 0) {
+        alert('Valid price is required (must be greater than 0)');
+        setLoading(false);
+        return;
+      }
+
+      console.log('📤 Submitting product:', { url, method, cleanFormData });
 
       const response = await fetch(url, {
         method,
         credentials: 'include', // Important: send cookies
         headers: getAuthHeaders(),
-        body: JSON.stringify(formData)
+        body: JSON.stringify(cleanFormData)
       });
 
       console.log('📥 Response status:', response.status, response.statusText);
