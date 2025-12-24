@@ -16,19 +16,15 @@ const Cart = () => {
     updateQuantity(productId, parseInt(newQuantity));
   };
 
-  const handleContinueShopping = () => {
-    navigate('/products');
-  };
-
   if (cartItems.length === 0) {
     return (
       <div className="cart-container">
         <h1 className="cart-title">Your Cart</h1>
         <div className="empty-cart">
           <p>Your cart is empty</p>
-          <button onClick={handleContinueShopping} className="shop-link">
+          <Link to="/products" className="shop-link">
             Continue Shopping
-          </button>
+          </Link>
         </div>
       </div>
     );
