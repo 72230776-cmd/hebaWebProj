@@ -1,5 +1,5 @@
 import { useCart } from '../contexts/CartContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/cart.css';
 
 const Cart = () => {
@@ -22,9 +22,9 @@ const Cart = () => {
         <h1 className="cart-title">Your Cart</h1>
         <div className="empty-cart">
           <p>Your cart is empty</p>
-          <button onClick={() => navigate('/products')} className="shop-link">
+          <Link to="/products" className="shop-link">
             Continue Shopping
-          </button>
+          </Link>
         </div>
       </div>
     );
