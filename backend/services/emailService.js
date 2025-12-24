@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   port: smtpPort,
   secure: useSSL, // true for 465, false for other ports
   auth: {
-    user: process.env.SMTP_USER || '72230776@students.liu.edu.lb',
+    user: process.env.SMTP_USER || 'mayaamhaz2022@gmail.com',
     pass: process.env.SMTP_PASSWORD || ''
   },
   // Timeout settings to handle slow connections
@@ -43,7 +43,7 @@ const emailService = {
   // Send invoice email when order is created
   async sendInvoiceEmail(order, user, items) {
     try {
-      const fromEmail = process.env.SMTP_USER || '72230776@students.liu.edu.lb';
+      const fromEmail = process.env.SMTP_USER || 'mayaamhaz2022@gmail.com';
       
       const orderTotal = parseFloat(order.total_amount) + parseFloat(order.shipping_cost || 5.00);
       
@@ -139,7 +139,7 @@ const emailService = {
   // Send delivery confirmation email
   async sendDeliveryEmail(order, user, items) {
     try {
-      const fromEmail = process.env.SMTP_USER || '72230776@students.liu.edu.lb';
+      const fromEmail = process.env.SMTP_USER || 'mayaamhaz2022@gmail.com';
       
       const orderTotal = parseFloat(order.total_amount) + parseFloat(order.shipping_cost || 5.00);
       

@@ -31,11 +31,14 @@ FRONTEND_URL=https://72230776-cmd.github.io
 ```
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
-SMTP_USER=72230776@students.liu.edu.lb
-SMTP_PASSWORD=zqbfhiqmctukezmo
+SMTP_USER=mayaamhaz2022@gmail.com
+SMTP_PASSWORD=fkppijsorrvrdqd
 ```
 
-**Note**: Port 465 (SSL) is used instead of 587 (TLS) as it sometimes works better with Render's network restrictions. If emails still don't work, Render's free tier may be blocking SMTP connections entirely - in that case, orders will still work but emails won't be sent.
+**Note**: 
+- Port 465 (SSL) is used instead of 587 (TLS) as it sometimes works better with Render's network restrictions
+- App password should have NO spaces (remove all spaces from the password)
+- If emails still don't work, Render's free tier may be blocking SMTP connections entirely - in that case, orders will still work but emails won't be sent
 
 **Important Notes for Email:**
 - Remove spaces from the app password when adding to Render (no spaces)
@@ -93,9 +96,9 @@ NODE_ENV=production
 PORT=10000
 FRONTEND_URL=https://72230776-cmd.github.io
 SMTP_HOST=smtp.gmail.com
-SMTP_PORT=587
-SMTP_USER=72230776@students.liu.edu.lb
-SMTP_PASSWORD=zqbfhiqmctukezmo
+SMTP_PORT=465
+SMTP_USER=mayaamhaz2022@gmail.com
+SMTP_PASSWORD=fkppijsorrvrdqd
 ```
 
 ---
