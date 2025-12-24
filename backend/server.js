@@ -39,13 +39,33 @@ app.use(cookieParser()); // Parse cookies
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Test database connection
-db.getConnection((err, connection) => {
+// Test database connection and create tables if they don't exist
+db.getConnection(async (err, connection) => {
   if (err) {
     console.error('Database connection error:', err);
   } else {
     console.log('✅ Database connected successfully');
     connection.release();
+    
+    // Automatically create contacts and bookings tables if they don't exist
+    try {
+      const setupController = require('./controllers/setupController');
+      // Create a mock request/response to call the function
+      const mockReq = {};
+      const mockRes = {
+        json: (data) => {
+          if (data.success) {
+            console.log('✅ ' + data.message);
+          } else {
+            console.log('⚠️ ' + data.message);
+          }
+        },
+        status: () => mockRes
+      };
+      await setupController.createTables(mockReq, mockRes);
+    } catch (error) {
+      console.error('⚠️ Error creating tables on startup (non-critical):', error.message);
+    }
   }
 });
 
