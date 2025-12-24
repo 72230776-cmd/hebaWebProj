@@ -59,6 +59,9 @@ app.use('/api/booking', require('./routes/bookingRoutes')); // Public booking ro
 // Public product route (for users to view products)
 app.get('/api/products', require('./controllers/productController').getAllProducts);
 
+// Setup route to create tables (can be called once)
+app.post('/api/setup/tables', require('./controllers/setupController').createTables);
+
 // Root route
 app.get('/', (req, res) => {
   res.json({ 
