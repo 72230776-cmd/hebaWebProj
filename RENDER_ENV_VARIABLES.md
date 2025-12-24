@@ -29,16 +29,15 @@ FRONTEND_URL=https://72230776-cmd.github.io
 
 ### Email Configuration (Required for Checkout Feature)
 ```
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=mayaamhaz2022@gmail.com
-SMTP_PASSWORD=fkppijsorrvrdqd
+RESEND_API_KEY=re_V7ahoZi2_4A39G9ckjsUoqfP63NXgrZ7j
+EMAIL_FROM=onboarding@resend.dev
 ```
 
 **Note**: 
-- Port 465 (SSL) is used instead of 587 (TLS) as it sometimes works better with Render's network restrictions
-- App password should have NO spaces (remove all spaces from the password)
-- If emails still don't work, Render's free tier may be blocking SMTP connections entirely - in that case, orders will still work but emails won't be sent
+- Using Resend email service (more reliable than SMTP on Render)
+- `EMAIL_FROM` is optional - defaults to `onboarding@resend.dev` if not set
+- You can verify your domain in Resend dashboard to use a custom "from" email
+- Resend free tier: 3,000 emails/month
 
 **Important Notes for Email:**
 - Remove spaces from the app password when adding to Render (no spaces)
@@ -95,10 +94,8 @@ JWT_EXPIRE=30d
 NODE_ENV=production
 PORT=10000
 FRONTEND_URL=https://72230776-cmd.github.io
-SMTP_HOST=smtp.gmail.com
-SMTP_PORT=465
-SMTP_USER=mayaamhaz2022@gmail.com
-SMTP_PASSWORD=fkppijsorrvrdqd
+RESEND_API_KEY=re_V7ahoZi2_4A39G9ckjsUoqfP63NXgrZ7j
+EMAIL_FROM=onboarding@resend.dev
 ```
 
 ---
