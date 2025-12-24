@@ -408,22 +408,6 @@ const UsersManagement = () => {
     }
   };
 
-  const handleToggleActive = async (userId) => {
-    try {
-      const response = await fetch(`${API_URL}/users/${userId}/toggle-active`, {
-        method: 'PUT',
-        credentials: 'include', // Important: send cookies
-        headers: getAuthHeaders()
-      });
-      const data = await response.json();
-      if (data.success) {
-        alert(data.message);
-        fetchUsers();
-      }
-    } catch (error) {
-      alert('Error updating user status');
-    }
-  };
 
   if (loading) {
     return <div className="loading">Loading users...</div>;
@@ -440,7 +424,6 @@ const UsersManagement = () => {
               <th>Username</th>
               <th>Email</th>
               <th>Role</th>
-              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -451,14 +434,8 @@ const UsersManagement = () => {
                 <td>{user.username}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
-                <td>{user.is_active ? '✅ Active' : '❌ Disabled'}</td>
                 <td>
                   <button onClick={() => setEditingUser(user)}>Edit Password</button>
-                  {user.role !== 'admin' && (
-                    <button onClick={() => handleToggleActive(user.id)}>
-                      {user.is_active ? 'Disable' : 'Enable'}
-                    </button>
-                  )}
                 </td>
               </tr>
             ))}
