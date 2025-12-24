@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// Create reusable transporter
+// Create reusable transporter with timeout settings
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.SMTP_PORT) || 587,
@@ -9,13 +9,26 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.SMTP_USER || '72230776@students.liu.edu.lb',
     pass: process.env.SMTP_PASSWORD || ''
+  },
+  // Timeout settings to handle slow connections
+  connectionTimeout: 60000, // 60 seconds
+  greetingTimeout: 30000,   // 30 seconds
+  socketTimeout: 300000,    // 5 minutes
+  // Retry settings
+  pool: true,
+  maxConnections: 1,
+  maxMessages: 3,
+  // Additional options for better reliability
+  tls: {
+    rejectUnauthorized: false // Allow self-signed certificates if needed
   }
 });
 
-// Verify transporter
+// Verify transporter (non-blocking, don't fail if email service is unavailable)
 transporter.verify((error, success) => {
   if (error) {
-    console.error('❌ Email service error:', error);
+    console.error('⚠️ Email service verification failed (emails may not work):', error.message);
+    console.error('   This is non-critical - the app will continue to work without emails');
   } else {
     console.log('✅ Email service ready');
   }
@@ -168,11 +181,19 @@ const emailService = {
         `
       };
 
-      const info = await transporter.sendMail(mailOptions);
+      // Add timeout wrapper for email sending
+      const emailPromise = transporter.sendMail(mailOptions);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Email send timeout after 30 seconds')), 30000)
+      );
+      
+      const info = await Promise.race([emailPromise, timeoutPromise]);
       console.log('📧 Delivery email sent:', info.messageId);
       return { success: true, messageId: info.messageId };
     } catch (error) {
-      console.error('❌ Error sending delivery email:', error);
+      console.error('❌ Error sending delivery email:', error.message);
+      console.error('   Order status will still be updated - email is non-critical');
+      // Don't throw - email failure shouldn't break status update
       return { success: false, error: error.message };
     }
   }
