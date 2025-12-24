@@ -6,10 +6,11 @@ import "../styles/Navbar.css";
 
 const NavBar = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const { getTotalItems } = useCart();
+  const { getTotalItems, clearCartOnLogout } = useCart();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    clearCartOnLogout(); // Save cart for user, then clear current state
     logout();
     navigate("/");
   };

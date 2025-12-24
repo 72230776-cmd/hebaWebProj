@@ -22,9 +22,9 @@ const Cart = () => {
         <h1 className="cart-title">Your Cart</h1>
         <div className="empty-cart">
           <p>Your cart is empty</p>
-          <a href="/products" className="shop-link">
+          <button onClick={() => navigate('/products')} className="shop-link">
             Continue Shopping
-          </a>
+          </button>
         </div>
       </div>
     );
