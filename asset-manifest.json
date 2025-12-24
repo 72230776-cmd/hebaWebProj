@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/hebaWebProj/static/css/main.65d208be.css",
-    "main.js": "/hebaWebProj/static/js/main.bba50e80.js",
+    "main.js": "/hebaWebProj/static/js/main.a5b15d06.js",
     "static/media/African_pattern.jpg": "/hebaWebProj/static/media/African_pattern.c3926c8e7fb816eac45d.jpg",
     "index.html": "/hebaWebProj/index.html",
     "main.65d208be.css.map": "/hebaWebProj/static/css/main.65d208be.css.map",
-    "main.bba50e80.js.map": "/hebaWebProj/static/js/main.bba50e80.js.map"
+    "main.a5b15d06.js.map": "/hebaWebProj/static/js/main.a5b15d06.js.map"
   },
   "entrypoints": [
     "static/css/main.65d208be.css",
-    "static/js/main.bba50e80.js"
+    "static/js/main.a5b15d06.js"
   ]
 }
