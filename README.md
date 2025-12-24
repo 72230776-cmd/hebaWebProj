@@ -2,7 +2,7 @@
 
 ## Project Description
 
-This is a full-stack web application built for [describe your project purpose here]. The project includes a React frontend and Node.js backend with MySQL database integration.
+This is a full-stack e-commerce web application for an African market/store. The project includes a React frontend deployed on GitHub Pages and a Node.js/Express backend deployed on Render with PostgreSQL database integration. The application features user authentication, product management, shopping cart, order processing, and an admin panel for managing products, users, orders, contacts, and bookings.
 
 ## Technologies Used
 
@@ -13,8 +13,10 @@ This is a full-stack web application built for [describe your project purpose he
 
 ### Backend
 - Node.js
-- Express.js (to be added)
-- MySQL
+- Express.js
+- PostgreSQL (production) / MySQL (development support)
+- JWT Authentication
+- Resend (Email service)
 
 ### Deployment
 - GitHub Pages (Frontend)
@@ -22,10 +24,15 @@ This is a full-stack web application built for [describe your project purpose he
 
 ## Features
 
-- [ ] User Authentication (Login/Signup)
-- [ ] CRUD Operations
-- [ ] Database Integration (MySQL)
-- [ ] Responsive UI
+- [x] **User Authentication** - Login/Register with JWT tokens and role-based access
+- [x] **Product Management** - View products, add to cart, admin CRUD operations
+- [x] **Shopping Cart** - Add/remove items, user-specific cart persistence
+- [x] **Checkout & Orders** - Address management, order creation, order tracking
+- [x] **Admin Panel** - Manage products, users (password change), orders, contacts, bookings
+- [x] **Contact & Booking** - Contact form and appointment booking system
+- [x] **Email Notifications** - Invoice and delivery confirmation emails via Resend
+- [x] **Database Integration** - PostgreSQL/MySQL with automatic table creation
+- [x] **Responsive UI** - Modern, card-based design with consistent styling
 
 ## Setup Instructions
 
@@ -109,9 +116,14 @@ africa_full_website/
 └── README.md
 ```
 
+## Live Deployment
+
+- **Frontend**: https://72230776-cmd.github.io/hebaWebProj
+- **Backend API**: https://hebawebproj.onrender.com
+
 ## Screenshots
 
-[Add screenshots of your application here]
+[Screenshots can be added here showing the homepage, products page, cart, checkout, admin panel, etc.]
 
 ## Deployment
 
@@ -131,11 +143,45 @@ npm run build
 
 ## Database Schema
 
-[Add your database schema description here]
+The application uses the following main tables:
+- **users** - User accounts with authentication (id, username, email, password_hash, role, is_active)
+- **products** - Product catalog (id, name, price, description, image)
+- **orders** - Customer orders (id, user_id, total_amount, shipping_cost, status, shipping_address)
+- **order_items** - Order line items (id, order_id, product_id, quantity, price)
+- **addresses** - User shipping addresses (id, user_id, full_name, street_address, city, state, zip_code, country, phone)
+- **contacts** - Contact form submissions (id, name, email, message, created_at)
+- **bookings** - Appointment bookings (id, name, phone, email, order_type, appointment_date, appointment_time, description)
 
 ## API Endpoints
 
-[Add your API endpoints documentation here]
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login
+- `GET /api/auth/profile` - Get user profile (protected)
+
+### Products
+- `GET /api/products` - Get all products
+- `GET /api/products/:id` - Get product by ID
+- `POST /api/admin/products` - Create product (admin only)
+- `PUT /api/admin/products/:id` - Update product (admin only)
+- `DELETE /api/admin/products/:id` - Delete product (admin only)
+
+### Orders
+- `POST /api/checkout` - Create order
+- `GET /api/admin/orders` - Get all orders (admin only)
+- `PUT /api/admin/orders/:id/status` - Update order status (admin only)
+
+### Admin
+- `GET /api/admin/users` - Get all users (admin only)
+- `PUT /api/admin/users/:id/password` - Change user password (admin only)
+- `GET /api/admin/contacts` - Get all contact submissions (admin only)
+- `DELETE /api/admin/contacts/:id` - Delete contact (admin only)
+- `GET /api/admin/bookings` - Get all bookings (admin only)
+- `DELETE /api/admin/bookings/:id` - Delete booking (admin only)
+
+### Contact & Booking
+- `POST /api/contact` - Submit contact form
+- `POST /api/booking` - Book appointment
 
 ## Contributing
 
@@ -147,9 +193,16 @@ npm run build
 
 ## Authors
 
-- [Your Name/Group Members]
+- Heba (72230776@students.liu.edu.lb)
 
 ## Future Scope
 
-[Add future improvements and features]
+- Payment gateway integration
+- Product image upload functionality
+- User profile management
+- Order tracking for customers
+- Product reviews and ratings
+- Email notifications for order status updates
+- Advanced search and filtering
+- Wishlist functionality
 
