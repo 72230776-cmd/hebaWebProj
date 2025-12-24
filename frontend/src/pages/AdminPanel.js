@@ -118,21 +118,6 @@ const ProductsManagement = () => {
     }
   };
 
-  const fetchStaticProducts = async () => {
-    try {
-      const response = await fetch(`${API_URL}/products/static`, {
-        method: 'GET',
-        credentials: 'include', // Important: send cookies
-        headers: getAuthHeaders()
-      });
-      const data = await response.json();
-      if (data.success) {
-        setStaticProducts(data.data.products);
-      }
-    } catch (error) {
-      console.error('Error fetching static products:', error);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -169,12 +154,6 @@ const ProductsManagement = () => {
   };
 
   const handleDelete = async (id) => {
-    // Don't allow deleting static products
-    if (id.toString().startsWith('static_')) {
-      alert('Static products cannot be deleted. They are read-only from the JSON file.');
-      return;
-    }
-
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
     try {
@@ -194,12 +173,6 @@ const ProductsManagement = () => {
   };
 
   const handleEdit = (product) => {
-    // Don't allow editing static products
-    if (product.id.toString().startsWith('static_')) {
-      alert('Static products cannot be edited. They are read-only from the JSON file.');
-      return;
-    }
-
     setEditingProduct(product);
     setFormData({
       name: product.name,
@@ -214,7 +187,7 @@ const ProductsManagement = () => {
     setViewingProduct(product);
   };
 
-  if (loading && products.length === 0 && staticProducts.length === 0) {
+  if (loading && products.length === 0) {
     return <div className="loading">Loading products...</div>;
   }
 
