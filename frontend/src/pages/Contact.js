@@ -143,7 +143,6 @@ const Contact = () => {
               ✓ Thank you for your message! We'll get back to you soon.
             </div>
           )}
-          </form>
         </div>
       </div>
     </div>
