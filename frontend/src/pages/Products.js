@@ -15,8 +15,13 @@ const Products = () => {
   }, []);
 
   const fetchProducts = async () => {
+    // API URL - use production backend when deployed, localhost for development
+    const API_BASE_URL = process.env.REACT_APP_API_URL || 
+      (window.location.hostname === 'localhost' ? 'http://localhost:5000' : 'https://hebawebproj.onrender.com');
+    const API_URL = `${API_BASE_URL}/api/products`;
+
     try {
-      const response = await fetch("http://localhost:5000/api/products");
+      const response = await fetch(API_URL);
       const data = await response.json();
       if (data.success) {
         setProducts(data.data.products);
