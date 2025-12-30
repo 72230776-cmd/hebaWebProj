@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/HibaMohsenafricawebProj/static/css/main.45a7f959.css",
-    "main.js": "/HibaMohsenafricawebProj/static/js/main.1ca6a5e9.js",
-    "static/media/African_pattern.jpg": "/HibaMohsenafricawebProj/static/media/African_pattern.c3926c8e7fb816eac45d.jpg",
-    "index.html": "/HibaMohsenafricawebProj/index.html",
-    "main.45a7f959.css.map": "/HibaMohsenafricawebProj/static/css/main.45a7f959.css.map",
-    "main.1ca6a5e9.js.map": "/HibaMohsenafricawebProj/static/js/main.1ca6a5e9.js.map"
+    "main.css": "/hebaWebProj/static/css/main.1ed63921.css",
+    "main.js": "/hebaWebProj/static/js/main.0ea39fbc.js",
+    "static/media/African_pattern.jpg": "/hebaWebProj/static/media/African_pattern.c3926c8e7fb816eac45d.jpg",
+    "index.html": "/hebaWebProj/index.html",
+    "main.1ed63921.css.map": "/hebaWebProj/static/css/main.1ed63921.css.map",
+    "main.0ea39fbc.js.map": "/hebaWebProj/static/js/main.0ea39fbc.js.map"
   },
   "entrypoints": [
-    "static/css/main.45a7f959.css",
-    "static/js/main.1ca6a5e9.js"
+    "static/css/main.1ed63921.css",
+    "static/js/main.0ea39fbc.js"
   ]
 }
